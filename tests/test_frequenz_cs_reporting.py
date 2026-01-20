@@ -2,17 +2,29 @@
 # Copyright © 2026 Frequenz Energy-as-a-Service GmbH
 
 """Tests for the frequenz.frequenz_cs_reporting package."""
+
+from datetime import date, datetime, timedelta
+
 import pytest
 
-from frequenz.frequenz_cs_reporting import delete_me
+from frequenz.frequenz_cs_reporting.utils import time
 
 
-def test_frequenz_cs_reporting_succeeds() -> None:  # TODO(cookiecutter): Remove
-    """Test that the delete_me function succeeds."""
-    assert delete_me() is True
+def test_validate_range_accepts_chronological_values() -> None:
+    """validate_range returns converted datetimes when start < end."""
+    start = date(2024, 1, 1)
+    end = datetime(2024, 1, 2, 12, 0)
+
+    start_dt, end_dt = time.validate_range(start, end)
+
+    assert start_dt == datetime(2024, 1, 1)
+    assert end_dt == datetime(2024, 1, 2, 12, 0)
+    assert end_dt - start_dt == timedelta(days=1, hours=12)
 
 
-def test_frequenz_cs_reporting_fails() -> None:  # TODO(cookiecutter): Remove
-    """Test that the delete_me function fails."""
-    with pytest.raises(RuntimeError, match="This function should be removed!"):
-        delete_me(blow_up=True)
+def test_validate_range_rejects_invalid_order() -> None:
+    """validate_range raises when end is not after start."""
+    with pytest.raises(ValueError):
+        time.validate_range("2024-01-02", "2024-01-02")
+    with pytest.raises(ValueError):
+        time.validate_range("2024-01-03", "2024-01-02")

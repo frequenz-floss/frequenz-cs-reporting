@@ -10,12 +10,12 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "frequenz-frequenz-cs-reporting"
+name = "frequenz-cs-reporting"
 description = "Streamlit application for reporting and solar monitoring"
 readme = "README.md"
+dynamic = ["version"]
 license = { text = "MIT" }
-keywords = ["frequenz", "python", "lib", "library", "frequenz-cs-reporting"]
-# TODO(cookiecutter): Remove and add more classifiers if appropriate
+keywords = ["frequenz", "python", "lib", "library", "frequenz-cs-reporting", "tooling", "notebooks", "streamlit"]
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Intended Audience :: Developers",
@@ -26,17 +26,28 @@ classifiers = [
   "Typing :: Typed",
 ]
 requires-python = ">= 3.11, < 4"
-# TODO(cookiecutter): Remove and add more dependencies if appropriate
+
 dependencies = [
-  "typing-extensions >= 4.14.1, < 5",
+    "css-inline>=0.17.0",
+    "frequenz-lib-notebooks>=0.13.0, < 0.15.0",
+    "matplotlib>=3.10.6",
+    "numpy>=2.3.2",
+    "pandas>=2.3.2",
+    "plotly>=6.3.0",
+    "pyarrow>=21.0.0",
+    "python-box>=7.3.2",
+    "python-dateutil>=2.9.0.post0",
+    "python-dotenv>=1.1.1",
+    "pyyaml>=6.0.3",
+    "streamlit>=1.49.1",
+    "streamlit-aggrid>=1.1.8.post1",
+    "watchdog>=6.0.0",
 ]
-dynamic = ["version"]
 
 [[project.authors]]
 name = "Frequenz Energy-as-a-Service GmbH"
 email = "floss@frequenz.com"
 
-# TODO(cookiecutter): Remove and add more optional dependencies if appropriate
 [project.optional-dependencies]
 dev-flake8 = [
   "flake8 == 7.3.0",
@@ -61,8 +72,9 @@ dev-mkdocs = [
 dev-mypy = [
   "mypy == 1.19.1",
   "types-Markdown == 3.10.0.20251106",
+  "pandas-stubs",
   # For checking the noxfile, docs/ script, and tests
-  "frequenz-frequenz-cs-reporting[dev-mkdocs,dev-noxfile,dev-pytest]",
+  "frequenz-cs-reporting[dev-mkdocs,dev-noxfile,dev-pytest]",
 ]
 dev-noxfile = [
   "nox == 2025.11.12",
@@ -71,7 +83,7 @@ dev-noxfile = [
 dev-pylint = [
   # dev-pytest already defines a dependency to pylint because of the examples
   # For checking the noxfile, docs/ script, and tests
-  "frequenz-frequenz-cs-reporting[dev-mkdocs,dev-noxfile,dev-pytest]",
+  "frequenz-cs-reporting[dev-mkdocs,dev-noxfile,dev-pytest]",
 ]
 dev-pytest = [
   "pytest == 9.0.2",
@@ -82,7 +94,7 @@ dev-pytest = [
   "async-solipsism == 0.9",
 ]
 dev = [
-  "frequenz-frequenz-cs-reporting[dev-mkdocs,dev-flake8,dev-formatting,dev-mkdocs,dev-mypy,dev-noxfile,dev-pylint,dev-pytest]",
+  "frequenz-cs-reporting[dev-mkdocs,dev-flake8,dev-formatting,dev-mypy,dev-noxfile,dev-pylint,dev-pytest]",
 ]
 
 [project.urls]
@@ -92,10 +104,28 @@ Issues = "https://github.com/frequenz-floss/frequenz-cs-reporting/issues"
 Repository = "https://github.com/frequenz-floss/frequenz-cs-reporting"
 Support = "https://github.com/frequenz-floss/frequenz-cs-reporting/discussions/categories/support"
 
+[tool.setuptools]
+# This tells setuptools to look for packages inside the 'src' directory.
+package-dir = {"" = "src"}
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["frequenz*"]
+namespaces = true
+
+[tool.setuptools.package-data]
+"frequenz.frequenz_cs_reporting" = [
+    "assets/*.png",
+    "assets/*.jpg",
+    "assets/*.svg",
+    "assets/*.json",
+    ".streamlit/config.toml",
+]
+
 [tool.black]
 line-length = 88
-target-version = ['py311']
-include = '\.pyi?$'
+target-version = ["py311", "py312"]
 
 [tool.isort]
 profile = "black"
@@ -179,8 +209,13 @@ packages = ["frequenz.frequenz_cs_reporting"]
 strict = true
 
 [[tool.mypy.overrides]]
-module = ["mkdocs_macros.*", "sybil", "sybil.*"]
+module = ["mkdocs_macros.*", "sybil", "sybil.*", "pvlib", "pvlib.*", "plotly", "plotly.*"]
 ignore_missing_imports = true
 
 [tool.setuptools_scm]
 version_scheme = "post-release"
+
+[dependency-groups]
+dev = [
+    "pandas-stubs>=2.3.3.260113",
+]
