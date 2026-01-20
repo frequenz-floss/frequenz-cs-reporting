@@ -1,0 +1,287 @@
+# License: MIT
+# Copyright © 2026 Frequenz Energy-as-a-Service GmbH
+
+"""Plot rendering functions for the reporting views."""
+
+from __future__ import annotations
+
+import pandas as pd
+import streamlit as st
+from frequenz.lib.notebooks.reporting.plotter import (
+    plot_energy_pie_chart,
+    plot_time_series,
+)
+from frequenz.lib.notebooks.reporting.utils.column_mapper import ColumnMapper
+
+from frequenz.frequenz_cs_reporting.components.ui import render_plot_card
+from frequenz.frequenz_cs_reporting.constants import (
+    COLOR_DICT,
+    COLUMN_RENAME_MAP,
+    COMPONENT_CONFIGS,
+    TablesResult,
+)
+
+_DEFAULT_PLOT_ORDER = [
+    "Zeitpunkt",
+    "MID Gesamtverbrauch",
+    "Netzbezug",
+    "Netzeinspeisung",
+    "PV-Erzeugung",
+    "BHKW-Erzeugung",
+    "Wind-Erzeugung",
+    "Batterie",
+]
+_FILL_EXCLUDE = {"Zeitpunkt", "MID Gesamtverbrauch", "Netzbezug", "Netzeinspeisung"}
+_COMPONENT_TABS = [
+    ("PV Leistung", "pv"),
+    ("Batterie", "batt"),
+    ("Wind", "wind"),
+    ("BHKW", "chp"),
+    ("EV", "ev"),
+]
+
+
+# pylint: disable=too-many-arguments
+def render_time_series(
+    df: pd.DataFrame,
+    *,
+    time_col: str = "Zeitpunkt",
+    cols: list[str] | None = None,
+    title: str = "Zeitreihen-Plot",
+    xaxis_title: str = "Zeitpunkt",
+    yaxis_title: str = "kWh",
+    legend_title: str | None = "Komponenten",
+    color_dict: dict[str, str] | None = None,
+    long_format_flag: bool = False,
+    category_col: str | None = None,
+    value_col: str | None = None,
+    fill_cols: list[str] | None = None,
+    plot_order: list[str] | None = None,
+) -> None:
+    """Render a generic time-series plot inside a card.
+
+    Args:
+        df: Dataframe containing a datetime column and series to plot.
+        time_col: Column name containing datetime values.
+        cols: Optional list of series columns to include; defaults to all
+            non-time columns.
+        title: Title displayed above the plot.
+        xaxis_title: X-axis label.
+        yaxis_title: Y-axis label.
+        legend_title: Legend title or ``None`` to hide the legend title.
+        color_dict: Optional mapping from column names to colors.
+        long_format_flag: Whether the dataframe is already in long format.
+        category_col: Category column name when ``long_format_flag`` is ``True``.
+        value_col: Value column name when ``long_format_flag`` is ``True``.
+        fill_cols: Columns to fill under the curve for stacked plots.
+        plot_order: Explicit ordering of series when rendering.
+
+    Returns:
+        Streamlit components are rendered directly.
+    """
+    if df is None or df.empty:
+        st.info("No data to plot.")
+        return
+
+    if time_col not in df.columns:
+        st.info(f"No valid time column found (expected '{time_col}').")
+        return
+
+    df = df.copy()
+    if not pd.api.types.is_datetime64_any_dtype(df[time_col]):
+        df[time_col] = pd.to_datetime(df[time_col], errors="coerce")
+
+    fig = plot_time_series(
+        df,
+        time_col=time_col,
+        cols=cols,
+        title=title,
+        xaxis_title=xaxis_title,
+        yaxis_title=yaxis_title,
+        legend_title=legend_title,
+        color_dict=color_dict,
+        long_format_flag=long_format_flag,
+        category_col=category_col,
+        value_col=value_col,
+        fill_cols=fill_cols,
+        plot_order=plot_order,
+    )
+
+    render_plot_card(title, fig)
+
+
+def render_energy_pie_chart(
+    power_df: pd.DataFrame | None,
+    color_dict: dict[str, str] | None = None,
+) -> None:
+    """Render the energy mix pie chart from a power dataframe.
+
+    Args:
+        power_df: Dataframe containing ``Energy Source`` and ``Energy [kWh]``.
+        color_dict: Optional color mapping for pie segments.
+
+    Returns:
+        Streamlit components are rendered directly.
+    """
+    if power_df is None or power_df.empty:
+        st.info("No data available for energy pie chart.")
+        return
+
+    required_cols = {"Energy Source", "Energy [kWh]"}
+    if not required_cols.issubset(set(power_df.columns)):
+        st.info("Energy data missing required columns.")
+        return
+
+    power_df["Energy Source"] = power_df["Energy Source"].replace(
+        {"CHP": "BHKW", "Grid Consumption": "Netzbezug"}
+    )
+    power_df = power_df.rename(
+        columns={"Energy Source": "Energiebezug", "Energy [kWh]": "Energie [kWh]"}
+    )
+    fig = plot_energy_pie_chart(power_df, color_dict=color_dict)
+    render_plot_card("Energie-Mix", fig)
+
+
+# pylint: disable=too-many-arguments, too-many-positional-arguments
+def _render_component_tab(
+    tables: TablesResult,
+    mapper: ColumnMapper,
+    table_key: str,
+    title: str,
+    category_col: str,
+    value_col: str,
+    color_dict: dict[str, str] | None = None,
+) -> None:
+    """Render a component analysis tab with time series plot.
+
+    Args:
+        tables: Dictionary of analysis tables.
+        mapper: Column mapper for display names.
+        table_key: Key to lookup the table in ``tables``.
+        title: Title for the plot.
+        category_col: Category column name in the long-format dataframe.
+        value_col: Value column name in the long-format dataframe.
+        color_dict: Optional color mapping dictionary.
+
+    Returns:
+        Streamlit components are rendered directly.
+    """
+    df = tables.get(table_key)
+    if not isinstance(df, pd.DataFrame) or df.empty:
+        st.info(f"Keine Daten für {title}.")
+        return
+
+    palette = color_dict or COLOR_DICT
+    df = mapper.to_display(df)
+    render_time_series(
+        df,
+        time_col="Zeitpunkt",
+        title=title,
+        yaxis_title="kWh",
+        xaxis_title="Zeitpunkt",
+        legend_title=None,
+        long_format_flag=True,
+        category_col=category_col,
+        value_col=value_col,
+        color_dict=palette,
+    )
+
+
+def _prepare_overview_df(
+    tables: TablesResult, mapper: ColumnMapper
+) -> pd.DataFrame | None:
+    """Return overview dataframe with display-ready column names.
+
+    Args:
+        tables: Dictionary containing precomputed tables.
+        mapper: Column mapper for converting internal names to display names.
+
+    Returns:
+        Overview dataframe with renamed columns, or ``None``
+            when unavailable.
+    """
+    overview_df = tables.get("overview_df")
+    if overview_df is None or overview_df.empty:
+        return None
+
+    overview_df = mapper.to_display(overview_df)
+    # Compatibility shim until the latest lib notebooks update rolls out
+    return overview_df.rename(columns=COLUMN_RENAME_MAP)
+
+
+def _render_overview_plot(
+    overview_df: pd.DataFrame | None, color_dict: dict[str, str] | None
+) -> None:
+    """Render the main time-series overview plot.
+
+    Args:
+        overview_df: Overview dataframe in display naming convention.
+        color_dict: Optional color mapping for plot series.
+
+    Returns:
+        Streamlit components are rendered directly.
+    """
+    if overview_df is None or overview_df.empty:
+        st.info("No overview data to plot.")
+        return
+
+    palette = color_dict or COLOR_DICT
+    plot_order = [col for col in _DEFAULT_PLOT_ORDER if col in overview_df.columns]
+    fill_cols = [col for col in overview_df.columns if col not in _FILL_EXCLUDE]
+
+    render_time_series(
+        overview_df,
+        title="Lastgang Übersicht",
+        color_dict=palette,
+        fill_cols=fill_cols,
+        plot_order=plot_order,
+    )
+
+
+def render_plots_tabs(
+    tables: TablesResult,
+    mapper: ColumnMapper,
+    color_dict: dict[str, str] | None = None,
+) -> None:
+    """Render the plots section with overview, pie chart, and component tabs.
+
+    Args:
+        tables: Dictionary of analysis tables including overview and component
+            analysis dataframes.
+        mapper: Column mapper for display naming.
+        color_dict: Optional color mapping used across plots.
+
+    Returns:
+        Streamlit components are rendered directly.
+    """
+    st.subheader("Plots")
+
+    palette = color_dict or COLOR_DICT
+    overview_df = _prepare_overview_df(tables, mapper)
+
+    tab_labels = ["Zeitreihen-Plot", "Energie-Mix"] + [
+        label for label, _ in _COMPONENT_TABS
+    ]
+    plot_tabs = st.tabs(tab_labels)
+
+    with plot_tabs[0]:
+        _render_overview_plot(overview_df, palette)
+
+    with plot_tabs[1]:
+        render_energy_pie_chart(tables.get("power_table"), color_dict=palette)
+
+    for tab, (_, key) in zip(plot_tabs[2:], _COMPONENT_TABS):
+        with tab:
+            config = COMPONENT_CONFIGS.get(key)
+            if not config:
+                st.info("Keine Konfiguration für diese Komponente.")
+                continue
+            _render_component_tab(
+                tables=tables,
+                mapper=mapper,
+                table_key=f"{key}_analysis",
+                title=config["title"],
+                category_col=config["label"],
+                value_col=config["value_col"],
+                color_dict=palette,
+            )

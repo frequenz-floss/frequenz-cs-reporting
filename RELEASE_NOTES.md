@@ -1,17 +1,16 @@
 # Frequenz CS Reporting Library Release Notes
 
 ## Summary
-
-<!-- Here goes a general summary of what this release is about -->
+- Initial Streamlit-based reporting app that discovers packaged pages, shows branded navigation, and renders microgrid reporting dashboards backed by the frequenz data stack.
 
 ## Upgrading
 
-<!-- Here goes notes on how to upgrade from previous versions, including deprecations and what they should be replaced with -->
 
 ## New Features
-
-<!-- Here goes the main new features and examples or instructions on how to use them -->
+- Added app.py entrypoint that loads PageSpec definitions, persists navigation in query params, and renders sidebar branding.
+- New Home and Reporting pages: the dashboard offers microgrid/date/timezone/resolution filters, fetches/caches microgrid power data, builds a master dataframe, and drives overview metrics plus consumption breakdowns.
+- Dashboard visuals now include time-series plots, energy-mix pie, component-specific tabs (PV, battery, wind, BHKW, EV), and styled plot cards.
+- Data tables use AgGrid with CSV downloads for power mix, component analyses, and the combined master dataframe; reusable UI helpers and constants were added for consistent styling and column naming.
 
 ## Bug Fixes
 
-<!-- Here goes notable bug fixes that are worth a special mention or explanation -->
