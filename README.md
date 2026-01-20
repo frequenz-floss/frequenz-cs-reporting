@@ -1,7 +1,7 @@
 # Frequenz CS Reporting Library
 
 [![Build Status](https://github.com/frequenz-floss/frequenz-cs-reporting/actions/workflows/ci.yaml/badge.svg)](https://github.com/frequenz-floss/frequenz-cs-reporting/actions/workflows/ci.yaml)
-[![PyPI Package](https://img.shields.io/pypi/v/frequenz-frequenz-cs-reporting)](https://pypi.org/project/frequenz-frequenz-cs-reporting/)
+[![PyPI Package](https://img.shields.io/pypi/v/frequenz-cs-reporting)](https://pypi.org/project/frequenz-cs-reporting/)
 [![Docs](https://img.shields.io/badge/docs-latest-informational)](https://frequenz-floss.github.io/frequenz-cs-reporting/)
 
 ## Introduction
