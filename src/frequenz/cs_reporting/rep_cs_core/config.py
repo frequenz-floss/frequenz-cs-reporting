@@ -21,7 +21,7 @@ class Paths:
 
 @dataclass(frozen=True)
 class AppConfig:
-    """Container for application configuration.
+    """Container for library configuration.
 
     Attributes:
         paths: Paths configuration values.

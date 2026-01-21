@@ -3,7 +3,7 @@
 
 # Project information
 site_name: "Frequenz CS Reporting Library"
-site_description: "Streamlit application for reporting and solar monitoring"
+site_description: "Streamlit Library for reporting and solar monitoring"
 site_author: "Frequenz Energy-as-a-Service GmbH"
 copyright: "Copyright © 2026 Frequenz Energy-as-a-Service GmbH"
 repo_name: "frequenz-cs-reporting"

@@ -1,7 +1,7 @@
 # License: MIT
 # Copyright © 2026 Frequenz Energy-as-a-Service GmbH
 
-"""Shared constants for the reporting application."""
+"""Shared constants for the reporting library."""
 
 from typing import TypedDict
 
