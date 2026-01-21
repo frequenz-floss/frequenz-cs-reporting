@@ -115,7 +115,7 @@ include = ["frequenz*"]
 namespaces = true
 
 [tool.setuptools.package-data]
-"frequenz.frequenz_cs_reporting" = [
+"frequenz.cs_reporting" = [
     "assets/*.png",
     "assets/*.jpg",
     "assets/*.svg",
@@ -205,7 +205,7 @@ namespace_packages = true
 # used but getting the original ignored error when removing the type: ignore.
 # See for example: https://github.com/python/mypy/issues/2960
 #no_incremental = true
-packages = ["frequenz.frequenz_cs_reporting"]
+packages = ["frequenz.cs_reporting"]
 strict = true
 
 [[tool.mypy.overrides]]

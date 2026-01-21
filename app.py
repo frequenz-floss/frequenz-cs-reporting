@@ -31,18 +31,18 @@ if IN_DEEPNOTE:
 
 # --- Project paths & sys.path wiring ----------------------------------------
 PACKAGE_DIR = Path(__file__).resolve().parent
-LIB_PAGES_ROOT = "frequenz.frequenz_cs_reporting.app_pages"
+LIB_PAGES_ROOT = "frequenz.cs_reporting.app_pages"
 LOGO_NAME = "neustrom_logo.png"
 
 
 def _resolve_package_root() -> Path:
     """Return the installed frequenz package path, with a local fallback for dev."""
-    spec = importlib.util.find_spec("frequenz.frequenz_cs_reporting")
+    spec = importlib.util.find_spec("frequenz.cs_reporting")
     if spec and spec.submodule_search_locations:
         return Path(next(iter(spec.submodule_search_locations))).resolve()
     if spec and spec.origin:
         return Path(spec.origin).resolve().parent
-    return (PACKAGE_DIR / "src" / "frequenz" / "frequenz_cs_reporting").resolve()
+    return (PACKAGE_DIR / "src" / "frequenz" / "cs_reporting").resolve()
 
 
 PACKAGE_ROOT = _resolve_package_root()
@@ -54,7 +54,7 @@ if package_parent not in sys.path:
     sys.path.insert(0, package_parent)
 
 # Import PageSpec from your custom library
-from frequenz.frequenz_cs_reporting.rep_cs_core.page_spec import PageSpec
+from frequenz.cs_reporting.rep_cs_core.page_spec import PageSpec
 
 # --- Local page loader (from ./app_pages) -----------------------------------
 def _load_local_pages() -> list[PageSpec]:
@@ -119,7 +119,7 @@ def discover_library_pages(pkg_root: str = LIB_PAGES_ROOT) -> list[PageSpec]:
 def _load_logo_bytes() -> bytes | None:
     """Fetch the sidebar logo from the installed package resources."""
     try:
-        return resources.files("frequenz.frequenz_cs_reporting.assets").joinpath(LOGO_NAME).read_bytes()
+        return resources.files("frequenz.cs_reporting.assets").joinpath(LOGO_NAME).read_bytes()
     except (FileNotFoundError, ModuleNotFoundError):
         pass
 

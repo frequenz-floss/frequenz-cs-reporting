@@ -12,7 +12,7 @@ This module re-exports rendering functions from specialized modules:
 from __future__ import annotations
 
 # Re-export from constants
-from frequenz.frequenz_cs_reporting.constants import COLOR_DICT as color_dict
+from frequenz.cs_reporting.constants import COLOR_DICT as color_dict
 
 # Re-export from metric_renderers
 from .metric_renderers import (

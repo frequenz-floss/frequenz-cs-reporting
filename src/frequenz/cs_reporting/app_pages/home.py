@@ -10,7 +10,7 @@ from pathlib import Path
 
 import streamlit as st
 
-from frequenz.frequenz_cs_reporting.rep_cs_core.page_spec import PageSpec
+from frequenz.cs_reporting.rep_cs_core.page_spec import PageSpec
 
 PACKAGE_DIR = Path(__file__).resolve().parents[1]
 ASSETS_DIR = PACKAGE_DIR / "assets"

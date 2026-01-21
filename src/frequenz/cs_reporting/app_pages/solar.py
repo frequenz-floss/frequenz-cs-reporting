@@ -7,10 +7,10 @@ from __future__ import annotations
 
 # import streamlit as st
 # import pandas as pd
-# from frequenz.frequenz_cs_reporting.rep_cs_core.logging_utils import get_logger
-# from frequenz.frequenz_cs_reporting.rep_cs_core.utils import pretty_json
-# from frequenz.frequenz_cs_reporting.services import data_loader
-# from frequenz.frequenz_cs_reporting.services import reporting
+# from frequenz.cs_reporting.rep_cs_core.logging_utils import get_logger
+# from frequenz.cs_reporting.rep_cs_core.utils import pretty_json
+# from frequenz.cs_reporting.services import data_loader
+# from frequenz.cs_reporting.services import reporting
 
 # log = get_logger(__name__)
 

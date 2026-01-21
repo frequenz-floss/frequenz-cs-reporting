@@ -13,8 +13,8 @@ from frequenz.lib.notebooks.reporting.plotter import (
 )
 from frequenz.lib.notebooks.reporting.utils.column_mapper import ColumnMapper
 
-from frequenz.frequenz_cs_reporting.components.ui import render_plot_card
-from frequenz.frequenz_cs_reporting.constants import (
+from frequenz.cs_reporting.components.ui import render_plot_card
+from frequenz.cs_reporting.constants import (
     COLOR_DICT,
     COLUMN_RENAME_MAP,
     COMPONENT_CONFIGS,

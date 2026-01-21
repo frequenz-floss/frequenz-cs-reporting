@@ -9,7 +9,7 @@ from typing import Any
 
 import streamlit as st
 
-from frequenz.frequenz_cs_reporting.components.plot_charts import plot_percentage_bar
+from frequenz.cs_reporting.components.plot_charts import plot_percentage_bar
 
 
 def _peak_label(metrics: dict[str, object]) -> str:

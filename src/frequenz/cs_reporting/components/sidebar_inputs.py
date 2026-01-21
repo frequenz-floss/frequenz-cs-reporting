@@ -10,8 +10,8 @@ from typing import Any, Sequence
 
 import streamlit as st
 
-from frequenz.frequenz_cs_reporting.components import inputs
-from frequenz.frequenz_cs_reporting.services.client_factory import get_microgrid_ids
+from frequenz.cs_reporting.components import inputs
+from frequenz.cs_reporting.services.client_factory import get_microgrid_ids
 
 TIMEZONE_OPTIONS = (
     "Europe/Berlin",

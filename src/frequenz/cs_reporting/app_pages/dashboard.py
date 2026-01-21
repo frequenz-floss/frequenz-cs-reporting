@@ -13,16 +13,16 @@ import streamlit as st
 from frequenz.lib.notebooks.reporting.utils.column_mapper import ColumnMapper
 from frequenz.lib.notebooks.reporting.utils.helpers import set_date_to_midnight
 
-from frequenz.frequenz_cs_reporting.components.sidebar_inputs import (
+from frequenz.cs_reporting.components.sidebar_inputs import (
     collect_sidebar_inputs,
 )
-from frequenz.frequenz_cs_reporting.rep_cs_core.page_spec import PageSpec
-from frequenz.frequenz_cs_reporting.services.client_factory import (
+from frequenz.cs_reporting.rep_cs_core.page_spec import PageSpec
+from frequenz.cs_reporting.services.client_factory import (
     get_component_types,
     get_microgrid_config,
 )
-from frequenz.frequenz_cs_reporting.services.data_service import get_microgrid_data
-from frequenz.frequenz_cs_reporting.views.dashboard import (
+from frequenz.cs_reporting.services.data_service import get_microgrid_data
+from frequenz.cs_reporting.views.dashboard import (
     build_master_df,
     render_dashboard,
 )
@@ -97,7 +97,7 @@ def render() -> None:
     end_date = set_date_to_midnight(selections["end_date"], timezone)
 
     # Validate date range
-    if start_date >= end_date:
+    if start_date > end_date:
         st.warning(
             "End date must be on or after the start date. Please adjust your selection."
         )

@@ -12,12 +12,12 @@
 # "part:module":
 #   - changed-files:
 #     - any-glob-to-any-file:
-#       - "src/frequenz/lib/frequenz_cs_reporting/module/**"
+#       - "src/frequenz/lib/cs_reporting/module/**"
 #
 # "part:other":
 #   - changed-files:
 #     - any-glob-to-any-file:
-#       - "src/frequenz/lib/frequenz_cs_reporting/other/**"
+#       - "src/frequenz/lib/cs_reporting/other/**"
 #
 # # For excluding some files (in this example, label "part:complicated"
 # # everything inside src/ with a .py suffix, except for src/__init__.py)
