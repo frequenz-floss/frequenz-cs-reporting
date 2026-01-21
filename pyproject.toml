@@ -11,7 +11,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "frequenz-cs-reporting"
-description = "Streamlit application for reporting and solar monitoring"
+description = "Streamlit Library for reporting and solar monitoring"
 readme = "README.md"
 dynamic = ["version"]
 license = { text = "MIT" }

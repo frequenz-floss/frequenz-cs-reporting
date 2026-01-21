@@ -3,7 +3,7 @@
     "Introduction": "",
     "type": "lib",
     "name": "frequenz-cs-reporting",
-    "description": "Streamlit application for reporting and solar monitoring",
+    "description": "Streamlit Library for reporting and solar monitoring",
     "title": "Frequenz CS Reporting Library",
     "keywords": "(comma separated: 'frequenz', <type> and <name> are included automatically)",
     "github_org": "frequenz-floss",
