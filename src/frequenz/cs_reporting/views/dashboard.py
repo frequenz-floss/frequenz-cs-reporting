@@ -19,8 +19,8 @@ from frequenz.lib.notebooks.reporting.utils.reporting_nb_functions import (
     compute_energy_summary,
 )
 
-from frequenz.frequenz_cs_reporting.constants import COMPONENT_CONFIGS, TablesResult
-from frequenz.frequenz_cs_reporting.views import sections
+from frequenz.cs_reporting.constants import COMPONENT_CONFIGS, TablesResult
+from frequenz.cs_reporting.views import sections
 
 
 @st.cache_data(show_spinner="Preparing analysis tables…")

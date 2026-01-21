@@ -8,8 +8,8 @@ from __future__ import annotations
 import pandas as pd
 import streamlit as st
 
-from frequenz.frequenz_cs_reporting.components import tables
-from frequenz.frequenz_cs_reporting.constants import TablesResult
+from frequenz.cs_reporting.components import tables
+from frequenz.cs_reporting.constants import TablesResult
 
 
 def _round_numeric_columns(df: pd.DataFrame) -> pd.DataFrame:

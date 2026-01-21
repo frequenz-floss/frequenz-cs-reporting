@@ -11,11 +11,11 @@ from datetime import datetime, timedelta
 import pandas as pd
 import streamlit as st
 
-from frequenz.frequenz_cs_reporting.services.client_factory import (
+from frequenz.cs_reporting.services.client_factory import (
     get_component_types,
     get_microgrid_client,
 )
-from frequenz.frequenz_cs_reporting.utils.time import validate_range
+from frequenz.cs_reporting.utils.time import validate_range
 
 
 async def fetch_microgrid_data(

@@ -10,7 +10,7 @@
     "license": "MIT",
     "author_name": "Frequenz Energy-as-a-Service GmbH",
     "author_email": "floss@frequenz.com",
-    "python_package": "frequenz.frequenz_cs_reporting",
+    "python_package": "frequenz.cs_reporting",
     "pypi_package_name": "frequenz-cs-reporting",
     "github_repo_name": "frequenz-cs-reporting",
     "default_codeowners": "(like @some-org/some-team; defaults to a team based on the repo type)",

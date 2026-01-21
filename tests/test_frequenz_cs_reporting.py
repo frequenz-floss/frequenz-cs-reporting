@@ -1,13 +1,13 @@
 # License: MIT
 # Copyright © 2026 Frequenz Energy-as-a-Service GmbH
 
-"""Tests for the frequenz.frequenz_cs_reporting package."""
+"""Tests for the frequenz.cs_reporting package."""
 
 from datetime import date, datetime, timedelta
 
 import pytest
 
-from frequenz.frequenz_cs_reporting.utils import time
+from frequenz.cs_reporting.utils import time
 
 
 def test_validate_range_accepts_chronological_values() -> None:

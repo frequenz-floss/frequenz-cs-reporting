@@ -12,7 +12,7 @@ import streamlit as st
 from frequenz.data.microgrid import component_data
 from frequenz.gridpool import MicrogridConfig
 
-from frequenz.frequenz_cs_reporting.utils.env import require_env
+from frequenz.cs_reporting.utils.env import require_env
 
 
 @st.cache_resource(show_spinner=False)
