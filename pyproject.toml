@@ -121,6 +121,7 @@ namespaces = true
     "assets/*.svg",
     "assets/*.json",
     ".streamlit/config.toml",
+    "py.typed",
 ]
 
 [tool.black]

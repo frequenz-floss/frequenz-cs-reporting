@@ -11,3 +11,4 @@ recursive-exclude benchmarks *
 recursive-exclude docs *
 recursive-exclude tests *
 recursive-include py *.pyi
+include src/frequenz/cs_reporting/py.typed
