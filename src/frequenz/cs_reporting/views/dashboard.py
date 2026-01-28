@@ -111,10 +111,6 @@ def build_master_df(
         analysis and visualization. Includes derived metrics and standardized
         column names.
     """
-    if "consumption" not in raw_df.columns:
-        raw_df["consumption"] = (
-            raw_df.get("grid", 0) - raw_df.get("chp", 0) - raw_df.get("wind", 0)
-        )
     component_types = [col for col in component_types if col in raw_df.columns]
 
     # Now drop components whose meters sum to zero
