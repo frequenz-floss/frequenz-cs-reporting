@@ -71,7 +71,7 @@ dev-mkdocs = [
   "frequenz-repo-config[lib] == 0.17.0",
 ]
 dev-mypy = [
-  "mypy == 1.20.1",
+  "mypy == 1.20.2",
   "types-Markdown == 3.10.2.20260211",
   "types-pytz",
   "pandas-stubs",
