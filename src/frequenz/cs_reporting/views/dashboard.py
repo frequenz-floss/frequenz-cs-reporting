@@ -5,13 +5,18 @@
 
 from __future__ import annotations
 
+import asyncio
 from datetime import timedelta
 from typing import Any, Iterable
 
 import pandas as pd
 import streamlit as st
+from frequenz.lib.notebooks.reporting.asset_optimization.data import (
+    merge_day_ahead_prices,
+)
 from frequenz.lib.notebooks.reporting.data_processing import create_energy_report_df
 from frequenz.lib.notebooks.reporting.utils.column_mapper import ColumnMapper
+from frequenz.lib.notebooks.reporting.utils.helpers import get_meter_display_names
 from frequenz.lib.notebooks.reporting.utils.reporting_nb_functions import (
     aggregate_metrics,
     build_component_analysis,
@@ -100,6 +105,12 @@ def _build_tables(
     }
 
     overview_df = build_overview_df(master_df, component_types)
+    if "day_ahead_price" in master_df.columns and "timestamp" in overview_df.columns:
+        overview_df = overview_df.merge(
+            master_df[["timestamp", "day_ahead_price"]],
+            on="timestamp",
+            how="left",
+        )
 
     return {
         "power_table": power_table,
@@ -118,6 +129,7 @@ def build_master_df(
     component_types: Iterable[str],
     mcfg: Any,
     mapper: ColumnMapper,
+    timezone: str = "Europe/Berlin",
 ) -> pd.DataFrame:
     """Transform raw microgrid data into master analysis dataframe.
 
@@ -133,6 +145,7 @@ def build_master_df(
         mcfg: Microgrid configuration object containing component metadata and
             site-specific settings.
         mapper: Column name mapper for converting internal names to display names.
+        timezone: Timezone name to use for the report timestamps.
 
     Returns:
         Master dataframe with processed and aggregated component data, ready for
@@ -147,7 +160,25 @@ def build_master_df(
         for c in component_types
         if pd.to_numeric(raw_df[c], errors="coerce").fillna(0).sum() != 0
     ]
-    master_df = create_energy_report_df(raw_df, component_types, mcfg, mapper)
+    component_display_names = asyncio.run(
+        get_meter_display_names(mcfg.meta.microgrid_id)
+    )
+    master_df = create_energy_report_df(
+        raw_df,
+        component_types,
+        mcfg,
+        mapper=mapper,
+        tz_name=timezone,
+        assume_tz="UTC",
+        component_display_names=component_display_names,
+    )
+    try:
+        master_df = merge_day_ahead_prices(
+            master_df.set_index("timestamp"),
+            dayahead_country_code="DE_LU",
+        ).reset_index()
+    except (ModuleNotFoundError, ValueError) as exc:
+        st.warning(f"Day-ahead prices could not be loaded: {exc}")
     return master_df
 
 

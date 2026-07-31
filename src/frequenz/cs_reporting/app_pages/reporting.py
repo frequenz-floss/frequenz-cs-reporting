@@ -162,7 +162,13 @@ def render() -> None:
 
     # Build and render dashboard
     mapper = ColumnMapper.from_default()
-    master_df = build_master_df(df_prepared, component_types, mcfg, mapper)
+    master_df = build_master_df(
+        df_prepared,
+        component_types,
+        mcfg,
+        mapper,
+        timezone=timezone,
+    )
     render_dashboard(
         master_df,
         resolution=resolution,
