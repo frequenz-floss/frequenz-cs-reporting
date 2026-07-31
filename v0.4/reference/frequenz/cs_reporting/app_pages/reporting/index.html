@@ -2162,7 +2162,13 @@ and renders the dashboard views.</p>
 <span class="normal"><a href="#__codelineno-0-169">169</a></span>
 <span class="normal"><a href="#__codelineno-0-170">170</a></span>
 <span class="normal"><a href="#__codelineno-0-171">171</a></span>
-<span class="normal"><a href="#__codelineno-0-172">172</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-88"><a id="__codelineno-0-88" name="__codelineno-0-88"></a><span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal"><a href="#__codelineno-0-172">172</a></span>
+<span class="normal"><a href="#__codelineno-0-173">173</a></span>
+<span class="normal"><a href="#__codelineno-0-174">174</a></span>
+<span class="normal"><a href="#__codelineno-0-175">175</a></span>
+<span class="normal"><a href="#__codelineno-0-176">176</a></span>
+<span class="normal"><a href="#__codelineno-0-177">177</a></span>
+<span class="normal"><a href="#__codelineno-0-178">178</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-88"><a id="__codelineno-0-88" name="__codelineno-0-88"></a><span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span id="__span-0-89"><a id="__codelineno-0-89" name="__codelineno-0-89"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Render the Frequenz Reporting Dashboard page.</span>
 </span><span id="__span-0-90"><a id="__codelineno-0-90" name="__codelineno-0-90"></a>
 </span><span id="__span-0-91"><a id="__codelineno-0-91" name="__codelineno-0-91"></a><span class="sd">    Collects sidebar inputs, fetches microgrid data, prepares it for analysis,</span>
@@ -2239,14 +2245,20 @@ and renders the dashboard views.</p>
 </span><span id="__span-0-162"><a id="__codelineno-0-162" name="__codelineno-0-162"></a>
 </span><span id="__span-0-163"><a id="__codelineno-0-163" name="__codelineno-0-163"></a>    <span class="c1"># Build and render dashboard</span>
 </span><span id="__span-0-164"><a id="__codelineno-0-164" name="__codelineno-0-164"></a>    <span class="n">mapper</span> <span class="o">=</span> <span class="n">ColumnMapper</span><span class="o">.</span><span class="n">from_default</span><span class="p">()</span>
-</span><span id="__span-0-165"><a id="__codelineno-0-165" name="__codelineno-0-165"></a>    <span class="n">master_df</span> <span class="o">=</span> <span class="n">build_master_df</span><span class="p">(</span><span class="n">df_prepared</span><span class="p">,</span> <span class="n">component_types</span><span class="p">,</span> <span class="n">mcfg</span><span class="p">,</span> <span class="n">mapper</span><span class="p">)</span>
-</span><span id="__span-0-166"><a id="__codelineno-0-166" name="__codelineno-0-166"></a>    <span class="n">render_dashboard</span><span class="p">(</span>
-</span><span id="__span-0-167"><a id="__codelineno-0-167" name="__codelineno-0-167"></a>        <span class="n">master_df</span><span class="p">,</span>
-</span><span id="__span-0-168"><a id="__codelineno-0-168" name="__codelineno-0-168"></a>        <span class="n">resolution</span><span class="o">=</span><span class="n">resolution</span><span class="p">,</span>
-</span><span id="__span-0-169"><a id="__codelineno-0-169" name="__codelineno-0-169"></a>        <span class="n">component_types</span><span class="o">=</span><span class="n">component_types</span><span class="p">,</span>
-</span><span id="__span-0-170"><a id="__codelineno-0-170" name="__codelineno-0-170"></a>        <span class="n">mapper</span><span class="o">=</span><span class="n">mapper</span><span class="p">,</span>
+</span><span id="__span-0-165"><a id="__codelineno-0-165" name="__codelineno-0-165"></a>    <span class="n">master_df</span> <span class="o">=</span> <span class="n">build_master_df</span><span class="p">(</span>
+</span><span id="__span-0-166"><a id="__codelineno-0-166" name="__codelineno-0-166"></a>        <span class="n">df_prepared</span><span class="p">,</span>
+</span><span id="__span-0-167"><a id="__codelineno-0-167" name="__codelineno-0-167"></a>        <span class="n">component_types</span><span class="p">,</span>
+</span><span id="__span-0-168"><a id="__codelineno-0-168" name="__codelineno-0-168"></a>        <span class="n">mcfg</span><span class="p">,</span>
+</span><span id="__span-0-169"><a id="__codelineno-0-169" name="__codelineno-0-169"></a>        <span class="n">mapper</span><span class="p">,</span>
+</span><span id="__span-0-170"><a id="__codelineno-0-170" name="__codelineno-0-170"></a>        <span class="n">timezone</span><span class="o">=</span><span class="n">timezone</span><span class="p">,</span>
 </span><span id="__span-0-171"><a id="__codelineno-0-171" name="__codelineno-0-171"></a>    <span class="p">)</span>
-</span><span id="__span-0-172"><a id="__codelineno-0-172" name="__codelineno-0-172"></a>    <span class="n">_scroll_to_section_if_requested</span><span class="p">()</span>
+</span><span id="__span-0-172"><a id="__codelineno-0-172" name="__codelineno-0-172"></a>    <span class="n">render_dashboard</span><span class="p">(</span>
+</span><span id="__span-0-173"><a id="__codelineno-0-173" name="__codelineno-0-173"></a>        <span class="n">master_df</span><span class="p">,</span>
+</span><span id="__span-0-174"><a id="__codelineno-0-174" name="__codelineno-0-174"></a>        <span class="n">resolution</span><span class="o">=</span><span class="n">resolution</span><span class="p">,</span>
+</span><span id="__span-0-175"><a id="__codelineno-0-175" name="__codelineno-0-175"></a>        <span class="n">component_types</span><span class="o">=</span><span class="n">component_types</span><span class="p">,</span>
+</span><span id="__span-0-176"><a id="__codelineno-0-176" name="__codelineno-0-176"></a>        <span class="n">mapper</span><span class="o">=</span><span class="n">mapper</span><span class="p">,</span>
+</span><span id="__span-0-177"><a id="__codelineno-0-177" name="__codelineno-0-177"></a>    <span class="p">)</span>
+</span><span id="__span-0-178"><a id="__codelineno-0-178" name="__codelineno-0-178"></a>    <span class="n">_scroll_to_section_if_requested</span><span class="p">()</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>
