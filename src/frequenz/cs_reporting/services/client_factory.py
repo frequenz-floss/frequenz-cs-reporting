@@ -5,12 +5,15 @@
 
 from __future__ import annotations
 
+import asyncio
 import os
 from pathlib import Path
 
 import streamlit as st
+from frequenz.client.assets import AssetsApiClient
+from frequenz.client.common.microgrid import MicrogridId
 from frequenz.data.microgrid import component_data
-from frequenz.gridpool import MicrogridConfig
+from frequenz.gridpool import MicrogridConfig, load_configs
 
 from frequenz.cs_reporting.utils.env import require_env
 
@@ -28,7 +31,28 @@ def _load_microgrid_configs() -> dict[str, MicrogridConfig]:
     config_root = Path(os.getenv("MICROGRID_CONFIG_DIR", "toml_directory/"))
     if not config_root.is_dir():
         raise RuntimeError(f"Microgrid config directory not found: {config_root}")
-    return MicrogridConfig.load_configs(microgrid_config_dir=config_root)
+    config_files: list[str | Path] = sorted(config_root.glob("*.toml"))
+    if not config_files:
+        raise RuntimeError(f"No microgrid config files found in: {config_root}")
+    auth_key = require_env("API_KEY")
+    sign_secret = require_env("API_SECRET")
+    assets_api_url = require_env("ASSETS_API_URL")
+
+    async def load() -> dict[str, MicrogridConfig]:
+        assets_client = AssetsApiClient(
+            assets_api_url,
+            auth_key=auth_key,
+            sign_secret=sign_secret,
+        )
+        try:
+            return await load_configs(
+                default_files=config_files,
+                assets_client=assets_client,
+            )
+        finally:
+            await assets_client.disconnect()
+
+    return asyncio.run(load())
 
 
 def get_microgrid_client(microgrid_id: int) -> component_data.MicrogridData:
@@ -95,3 +119,38 @@ def get_microgrid_ids() -> list[int]:
         List of configured microgrid IDs.
     """
     return sorted(int(mid.replace("iot", "")) for mid in _load_microgrid_configs())
+
+
+@st.cache_data(show_spinner=False)
+def get_meter_display_names(microgrid_id: int) -> dict[str, str]:
+    """Return component display names for a microgrid from the Assets API.
+
+    Args:
+        microgrid_id: Identifier for the target microgrid.
+
+    Returns:
+        Mapping of component ID strings to display names.
+    """
+    auth_key = require_env("API_KEY")
+    sign_secret = require_env("API_SECRET")
+    assets_api_url = require_env("ASSETS_API_URL")
+
+    async def load() -> dict[str, str]:
+        assets_client = AssetsApiClient(
+            assets_api_url,
+            auth_key=auth_key,
+            sign_secret=sign_secret,
+        )
+        try:
+            components = await assets_client.list_microgrid_electrical_components(
+                MicrogridId(microgrid_id)
+            )
+            return {
+                str(component.id): component.name
+                for component in components
+                if component.name
+            }
+        finally:
+            await assets_client.disconnect()
+
+    return asyncio.run(load())
