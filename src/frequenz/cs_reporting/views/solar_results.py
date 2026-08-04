@@ -9,6 +9,7 @@ import base64
 import math
 from io import BytesIO
 from typing import Any
+from urllib.parse import quote
 
 import matplotlib.pyplot as plt
 import streamlit as st
@@ -52,7 +53,10 @@ def _render_production_table(plot_data: SolarAnalysisData) -> None:
     estimated_rows = max(1, math.ceil(len(table_view) / cards_per_row))
     height = min(140 + estimated_rows * 430, 1600)
 
-    st.components.v1.html(dashboard_html, height=height, scrolling=True)
+    st.iframe(
+        f"data:text/html;charset=utf-8,{quote(dashboard_html)}",
+        height=height,
+    )
 
 
 def _ensure_card_styles() -> None:

@@ -92,63 +92,39 @@ def aggrid_table(
 
     # Fit columns on first load
     grid_options = gb.build()
-    reset_button_id = f"{key_prefix}_aggrid_reset_filters"
     grid_options["onGridReady"] = JsCode(f"""
         function(params) {{
-            const resetButtonId = {json.dumps(reset_button_id)};
-            const gridContainer = document.getElementById("gridContainer");
-            if (!gridContainer || document.getElementById(resetButtonId)) {{
-                return;
+            const gridKey = {json.dumps(key_prefix)};
+            const messageType = "cs-reporting-reset-aggrid-filters";
+            window.__csReportingAgGridResetHandlers =
+                window.__csReportingAgGridResetHandlers || {{}};
+
+            const previousHandler =
+                window.__csReportingAgGridResetHandlers[gridKey];
+            if (previousHandler) {{
+                window.removeEventListener("message", previousHandler);
             }}
 
-            const resetBar = document.createElement("div");
-            resetBar.id = resetButtonId;
-            resetBar.style.position = "absolute";
-            resetBar.style.left = "0";
-            resetBar.style.top = "0";
-            resetBar.style.transform = "translateY(-2.2rem)";
-            resetBar.style.display = "flex";
-            resetBar.style.justifyContent = "flex-start";
-            resetBar.style.pointerEvents = "none";
-            resetBar.style.zIndex = "10";
-
-            const resetButton = document.createElement("button");
-            resetButton.type = "button";
-            resetButton.textContent = "Filter der Tabelle zurücksetzen";
-            resetButton.style.backgroundColor = "#fff4bf";
-            resetButton.style.border = "1px solid #e4c34a";
-            resetButton.style.color = "#4f3f00";
-            resetButton.style.borderRadius = "6px";
-            resetButton.style.fontSize = "0.8rem";
-            resetButton.style.fontWeight = "600";
-            resetButton.style.lineHeight = "1.1";
-            resetButton.style.minHeight = "1.75rem";
-            resetButton.style.padding = "0.15rem 0.55rem";
-            resetButton.style.cursor = "pointer";
-            resetButton.style.pointerEvents = "auto";
-            resetButton.addEventListener("mouseenter", function() {{
-                resetButton.style.backgroundColor = "#ffe88a";
-                resetButton.style.borderColor = "#c7a629";
-                resetButton.style.color = "#3f3200";
-            }});
-            resetButton.addEventListener("mouseleave", function() {{
-                resetButton.style.backgroundColor = "#fff4bf";
-                resetButton.style.borderColor = "#e4c34a";
-                resetButton.style.color = "#4f3f00";
-            }});
-            resetButton.addEventListener("click", function(event) {{
-                event.preventDefault();
-                event.stopPropagation();
+            const resetFilters = function() {{
                 params.api.setFilterModel(null);
                 params.api.onFilterChanged();
                 params.api.paginationGoToFirstPage();
-            }});
+            }};
 
-            resetBar.appendChild(resetButton);
-            gridContainer.style.position = "relative";
-            gridContainer.appendChild(resetBar);
+            const handler = function(event) {{
+                if (
+                    event.data &&
+                    event.data.type === messageType &&
+                    event.data.gridKey === gridKey
+                ) {{
+                    resetFilters();
+                }}
+            }};
+
+            window.__csReportingAgGridResetHandlers[gridKey] = handler;
+            window.addEventListener("message", handler);
         }}
-        """)
+    """)
 
     # --- Scoped CSS: restrained header + clean grid lines ---
     container_id = f"agc_{key_prefix}"
@@ -172,9 +148,6 @@ def aggrid_table(
             border: 1px solid #d9e1ec !important;
             border-radius: 10px !important;
             overflow: hidden !important;
-        }}
-        #{container_id} {{
-            margin-top: 2.2rem;
         }}
         </style>
         """,

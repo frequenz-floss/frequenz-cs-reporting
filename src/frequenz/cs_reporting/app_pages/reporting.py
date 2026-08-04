@@ -10,7 +10,6 @@ from datetime import UTC, datetime, timedelta
 
 import pandas as pd
 import streamlit as st
-import streamlit.components.v1 as components
 from frequenz.lib.notebooks.reporting.utils.column_mapper import ColumnMapper
 from frequenz.lib.notebooks.reporting.utils.helpers import (
     normalize_date_for_reporting,
@@ -32,17 +31,16 @@ def _scroll_to_section_if_requested() -> None:
     if st.query_params.get("section") != "data-export":
         return
 
-    # Execute in parent document because Streamlit components render in an iframe.
-    components.html(
+    st.html(
         """
         <script>
-        const target = window.parent.document.getElementById("data-export-section");
+        const target = document.getElementById("data-export-section");
         if (target) {
             target.scrollIntoView({ behavior: "smooth", block: "start" });
         }
         </script>
         """,
-        height=0,
+        unsafe_allow_javascript=True,
     )
 
 
@@ -92,7 +90,7 @@ def _format_data_loading_error(exc: Exception, microgrid_id: int) -> str:
     if isinstance(exc, TimeoutError):
         return (
             "Zeitüberschreitung beim Laden der Microgrid-Daten. "
-            "Bitte wählen Sie einen kleineren Zeitraum oder versuchen Sie es erneut."
+            "Bitte wählen Sie einen anderen Zeitraum oder versuchen Sie es erneut."
             f"{detail_suffix}"
         )
 
