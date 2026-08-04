@@ -29,4 +29,8 @@ RUN pip install --no-cache-dir \
     "marshmallow-dataclass>=8.7.1,<9" \
     "plotly>=6.0.0,<6.4.0" \
     "kaleido>=0.2.1,<1.2.0" \
-    "marshmallow>=4.1.0,<5"
+    "marshmallow>=4.1.0,<5" \
+    "grpcio>=1.81.1,<2"
+
+# Prefer packages installed in Deepnote's venv over Deepnote's toolkit server libs.
+ENV PYTHONPATH="/root/venv/lib/python3.12/site-packages:${PYTHONPATH}"
