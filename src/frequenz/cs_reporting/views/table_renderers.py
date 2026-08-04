@@ -5,6 +5,8 @@
 
 from __future__ import annotations
 
+import json
+
 import pandas as pd
 import streamlit as st
 from frequenz.lib.notebooks.reporting.utils.column_mapper import ColumnMapper
@@ -109,6 +111,72 @@ def _style_download_button(
     )
 
 
+def _render_reset_filters_button(key_prefix: str) -> None:
+    """Render a no-rerun button that clears the matching AgGrid filters."""
+    button_id = f"{key_prefix}_reset_table_filters"
+    button_html = f"""
+        <button id="{button_id}" type="button">
+            Filter der Tabelle zurücksetzen
+        </button>
+        <script>
+        (function() {{
+            const button = document.getElementById({json.dumps(button_id)});
+            const gridKey = {json.dumps(key_prefix)};
+            const messageType = "cs-reporting-reset-aggrid-filters";
+
+            if (!button) {{
+                return;
+            }}
+
+            button.addEventListener("click", function(event) {{
+                event.preventDefault();
+                event.stopPropagation();
+
+                for (const iframe of window.parent.document.querySelectorAll("iframe")) {{
+                    try {{
+                        iframe.contentWindow.postMessage(
+                            {{ type: messageType, gridKey: gridKey }},
+                            "*"
+                        );
+                    }} catch (error) {{
+                        // Ignore if a browser blocks access to an iframe window.
+                    }}
+                }}
+            }});
+        }})();
+        </script>
+        <style>
+        html,
+        body {{
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: transparent;
+        }}
+        #{button_id} {{
+            background-color: #fff4bf;
+            border: 1px solid #e4c34a;
+            color: #4f3f00;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.8rem;
+            font-weight: 600;
+            line-height: 1.1;
+            min-height: 1.75rem;
+            padding: 0.15rem 0.55rem;
+            white-space: nowrap;
+        }}
+        #{button_id}:hover {{
+            background-color: #ffe88a;
+            border-color: #c7a629;
+            color: #3f3200;
+        }}
+        </style>
+    """
+    st.html(button_html, unsafe_allow_javascript=True)
+
+
 def render_table_section(
     df: pd.DataFrame | None,
     *,
@@ -130,11 +198,13 @@ def render_table_section(
     """
     safe_df = df if (df is not None and not df.empty) else pd.DataFrame()
     display_df = _round_numeric_columns(safe_df)
-    header_cols = st.columns([8, 1])
+    header_cols = st.columns([1, 0.125])
     if caption:
         header_cols[0].caption(caption)
     else:
         header_cols[0].markdown("", unsafe_allow_html=True)
+    with header_cols[0]:
+        _render_reset_filters_button(key_prefix)
 
     if not safe_df.empty:
         csv_bytes = display_df.to_csv(index=False, sep=";", decimal=",").encode("utf-8")
@@ -164,8 +234,10 @@ def render_master_df(master_df: pd.DataFrame, mapper: ColumnMapper) -> None:
         Streamlit components are rendered directly.
     """
     if master_df is not None and not master_df.empty:
-        header_cols = st.columns([10, 1])
-        header_cols[0].caption("Standardized master dataframe")
+        header_cols = st.columns([1, 0.125])
+        header_cols[0].caption("Standardisierter Haupt-DataFrame")
+        with header_cols[0]:
+            _render_reset_filters_button("master_df")
         display_df = _round_numeric_columns(
             mapper.to_display(master_df).rename(columns=_MASTER_DF_DISPLAY_RENAMES)
         )
@@ -174,7 +246,7 @@ def render_master_df(master_df: pd.DataFrame, mapper: ColumnMapper) -> None:
         )
         _style_download_button(header_cols[1])
         header_cols[1].download_button(
-            label="Download Gesamt-Datensatz",
+            label="CSV herunterladen",
             data=master_csv,
             file_name="master_df.csv",
             mime="text/csv",
@@ -214,12 +286,19 @@ def render_data_tabs(
         st.info("Keine Datentabellen verfügbar.")
         return
 
-    tab_labels = [spec["label"] for spec in available_specs]
+    tab_labels = []
     if include_master:
         tab_labels.append("Gesamt-Datensatz")
+    tab_labels.extend(spec["label"] for spec in available_specs)
     tabs = st.tabs(tab_labels)
 
-    for tab, spec in zip(tabs, available_specs):
+    table_tabs = tabs
+    if include_master:
+        with tabs[0]:
+            render_master_df(master_df, mapper)
+        table_tabs = tabs[1:]
+
+    for tab, spec in zip(table_tabs, available_specs):
         value = tables_dict.get(spec["table_key"])
         with tab:
             render_table_section(
@@ -228,7 +307,3 @@ def render_data_tabs(
                 caption=spec.get("caption"),
                 empty_info=spec.get("empty_info"),
             )
-
-    if include_master:
-        with tabs[-1]:
-            render_master_df(master_df, mapper)

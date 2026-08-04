@@ -3,6 +3,8 @@
 
 """AgGrid helpers for rendering reporting tables."""
 
+import json
+
 import pandas as pd
 import streamlit as st
 from st_aggrid import (  # type: ignore[import-untyped]
@@ -10,7 +12,13 @@ from st_aggrid import (  # type: ignore[import-untyped]
     ColumnsAutoSizeMode,
     GridOptionsBuilder,
     GridUpdateMode,
+    JsCode,
 )
+
+_GRID_HEADER_HEIGHT = 40
+_GRID_ROW_HEIGHT = 44
+_GRID_PAGINATION_HEIGHT = 56
+_GRID_BORDER_HEIGHT = 2
 
 
 # pylint: disable=too-many-arguments
@@ -18,9 +26,9 @@ def aggrid_table(
     df: pd.DataFrame,
     *,
     key_prefix: str,
-    page_size: int = 12,
+    page_size: int = 7,
     header_color: str = "#1e4f87",
-    height: int = 420,
+    height: int | None = None,
     theme: str = "balham",  # 'alpine' | 'balham' | 'material' | etc.
     default_col_width: int = 180,
     min_col_width: int = 160,
@@ -46,13 +54,27 @@ def aggrid_table(
     # Initialize session state for page size if it doesn't exist
     if f"{key_prefix}_page_size" not in st.session_state:
         st.session_state[f"{key_prefix}_page_size"] = page_size
+    page_size = int(st.session_state[f"{key_prefix}_page_size"])
+    visible_rows = min(max(len(df), 1), page_size)
+    if height is None:
+        height = (
+            _GRID_HEADER_HEIGHT
+            + (visible_rows * _GRID_ROW_HEIGHT)
+            + _GRID_PAGINATION_HEIGHT
+            + _GRID_BORDER_HEIGHT
+        )
 
     # --- Build grid options from dataframe ---
     gb = GridOptionsBuilder.from_dataframe(df)
     gb.configure_pagination(
         enabled=True,
-        paginationAutoPageSize=True,
-        # paginationPageSize=st.session_state[f'{key_prefix}_page_size'],
+        paginationAutoPageSize=False,
+        paginationPageSize=page_size,
+    )
+    gb.configure_grid_options(
+        headerHeight=_GRID_HEADER_HEIGHT,
+        rowHeight=_GRID_ROW_HEIGHT,
+        paginationPageSizeSelector=False,
     )
 
     gb.configure_default_column(
@@ -70,6 +92,39 @@ def aggrid_table(
 
     # Fit columns on first load
     grid_options = gb.build()
+    grid_options["onGridReady"] = JsCode(f"""
+        function(params) {{
+            const gridKey = {json.dumps(key_prefix)};
+            const messageType = "cs-reporting-reset-aggrid-filters";
+            window.__csReportingAgGridResetHandlers =
+                window.__csReportingAgGridResetHandlers || {{}};
+
+            const previousHandler =
+                window.__csReportingAgGridResetHandlers[gridKey];
+            if (previousHandler) {{
+                window.removeEventListener("message", previousHandler);
+            }}
+
+            const resetFilters = function() {{
+                params.api.setFilterModel(null);
+                params.api.onFilterChanged();
+                params.api.paginationGoToFirstPage();
+            }};
+
+            const handler = function(event) {{
+                if (
+                    event.data &&
+                    event.data.type === messageType &&
+                    event.data.gridKey === gridKey
+                ) {{
+                    resetFilters();
+                }}
+            }};
+
+            window.__csReportingAgGridResetHandlers[gridKey] = handler;
+            window.addEventListener("message", handler);
+        }}
+    """)
 
     # --- Scoped CSS: restrained header + clean grid lines ---
     container_id = f"agc_{key_prefix}"
@@ -107,7 +162,9 @@ def aggrid_table(
             gridOptions=grid_options,
             height=height,
             theme=theme,
+            allow_unsafe_jscode=True,
             update_mode=GridUpdateMode.NO_UPDATE,
+            update_on=[],
             fit_columns_on_grid_load=False,
             columns_auto_size_mode=ColumnsAutoSizeMode.NO_AUTOSIZE,
             key=key_prefix,
