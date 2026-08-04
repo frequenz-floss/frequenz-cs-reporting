@@ -19,6 +19,7 @@ _GRID_HEADER_HEIGHT = 40
 _GRID_ROW_HEIGHT = 44
 _GRID_PAGINATION_HEIGHT = 56
 _GRID_BORDER_HEIGHT = 2
+_GRID_TOOLBAR_HEIGHT = 40
 
 
 # pylint: disable=too-many-arguments
@@ -90,39 +91,82 @@ def aggrid_table(
         suppressAutoSize=True,
     )
 
-    # Fit columns on first load
     grid_options = gb.build()
     grid_options["onGridReady"] = JsCode(f"""
         function(params) {{
-            const gridKey = {json.dumps(key_prefix)};
-            const messageType = "cs-reporting-reset-aggrid-filters";
-            window.__csReportingAgGridResetHandlers =
-                window.__csReportingAgGridResetHandlers || {{}};
-
-            const previousHandler =
-                window.__csReportingAgGridResetHandlers[gridKey];
-            if (previousHandler) {{
-                window.removeEventListener("message", previousHandler);
+            const buttonId = {json.dumps(f"{key_prefix}_reset_table_filters")};
+            const toolbarHeight = {_GRID_TOOLBAR_HEIGHT};
+            const existingButton = document.getElementById(buttonId);
+            if (existingButton) {{
+                return;
             }}
 
-            const resetFilters = function() {{
+            const gridRoot = document.querySelector(".ag-root-wrapper");
+            const gridParent = gridRoot ? gridRoot.parentElement : null;
+            if (!gridRoot || !gridParent) {{
+                return;
+            }}
+
+            const currentGridHeight = gridRoot.getBoundingClientRect().height;
+            if (currentGridHeight > toolbarHeight) {{
+                gridRoot.style.height = `${{currentGridHeight - toolbarHeight}}px`;
+            }}
+
+            const toolbar = document.createElement("div");
+            Object.assign(toolbar.style, {{
+                alignItems: "center",
+                backgroundColor: "transparent",
+                boxSizing: "border-box",
+                display: "flex",
+                height: `${{toolbarHeight}}px`,
+                justifyContent: "flex-start",
+                padding: "4px 0 6px 0",
+            }});
+
+            const button = document.createElement("button");
+            button.id = buttonId;
+            button.type = "button";
+            button.textContent = "Filter zurücksetzen";
+            button.title = "Filter der Tabelle zurücksetzen";
+            button.setAttribute("aria-label", "Filter der Tabelle zurücksetzen");
+
+            Object.assign(button.style, {{
+                backgroundColor: "#fff4bf",
+                border: "1px solid #e4c34a",
+                color: "#4f3f00",
+                borderRadius: "6px",
+                cursor: "pointer",
+                fontFamily: "inherit",
+                fontSize: "12px",
+                fontWeight: "600",
+                lineHeight: "1.1",
+                minHeight: "26px",
+                padding: "4px 8px",
+                whiteSpace: "nowrap",
+            }});
+
+            button.addEventListener("mouseenter", function() {{
+                button.style.backgroundColor = "#ffe88a";
+                button.style.borderColor = "#c7a629";
+                button.style.color = "#3f3200";
+            }});
+            button.addEventListener("mouseleave", function() {{
+                button.style.backgroundColor = "#fff4bf";
+                button.style.borderColor = "#e4c34a";
+                button.style.color = "#4f3f00";
+            }});
+
+            button.addEventListener("click", function(event) {{
+                event.preventDefault();
+                event.stopPropagation();
+
                 params.api.setFilterModel(null);
                 params.api.onFilterChanged();
                 params.api.paginationGoToFirstPage();
-            }};
+            }});
 
-            const handler = function(event) {{
-                if (
-                    event.data &&
-                    event.data.type === messageType &&
-                    event.data.gridKey === gridKey
-                ) {{
-                    resetFilters();
-                }}
-            }};
-
-            window.__csReportingAgGridResetHandlers[gridKey] = handler;
-            window.addEventListener("message", handler);
+            toolbar.appendChild(button);
+            gridParent.insertBefore(toolbar, gridRoot);
         }}
     """)
 
@@ -160,7 +204,7 @@ def aggrid_table(
         _ = AgGrid(
             df,
             gridOptions=grid_options,
-            height=height,
+            height=height + _GRID_TOOLBAR_HEIGHT,
             theme=theme,
             allow_unsafe_jscode=True,
             update_mode=GridUpdateMode.NO_UPDATE,
