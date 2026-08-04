@@ -2,20 +2,16 @@
 
 ## Summary
 
+<!-- Here goes a general summary of what this release is about -->
 
 ## Upgrading
 
-- Update dockerfile to have grpcio.
+<!-- Here goes notes on how to upgrade from previous versions, including deprecations and what they should be replaced with -->
 
 ## New Features
 
-- Added a "Filter der Tabelle zurücksetzen" control to reporting tables, allowing
-  users to clear AgGrid filters without rerunning the page.
+<!-- Here goes the main new features and examples or instructions on how to use them -->
 
 ## Bug Fixes
 
-- Fixed reporting table pagination and sizing by using a stable page size and
-  calculated grid height instead of automatic page sizing.
-- Improved reporting dashboard error handling for timeouts, missing microgrid
-  configuration, invalid filter parameters, service configuration problems, and
-  API/network failures.
+<!-- Here goes notable bug fixes that are worth a special mention or explanation -->
