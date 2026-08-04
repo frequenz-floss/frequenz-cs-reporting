@@ -3,6 +3,8 @@
 
 """AgGrid helpers for rendering reporting tables."""
 
+import json
+
 import pandas as pd
 import streamlit as st
 from st_aggrid import (  # type: ignore[import-untyped]
@@ -10,7 +12,13 @@ from st_aggrid import (  # type: ignore[import-untyped]
     ColumnsAutoSizeMode,
     GridOptionsBuilder,
     GridUpdateMode,
+    JsCode,
 )
+
+_GRID_HEADER_HEIGHT = 40
+_GRID_ROW_HEIGHT = 44
+_GRID_PAGINATION_HEIGHT = 56
+_GRID_BORDER_HEIGHT = 2
 
 
 # pylint: disable=too-many-arguments
@@ -18,9 +26,9 @@ def aggrid_table(
     df: pd.DataFrame,
     *,
     key_prefix: str,
-    page_size: int = 12,
+    page_size: int = 7,
     header_color: str = "#1e4f87",
-    height: int = 420,
+    height: int | None = None,
     theme: str = "balham",  # 'alpine' | 'balham' | 'material' | etc.
     default_col_width: int = 180,
     min_col_width: int = 160,
@@ -46,13 +54,27 @@ def aggrid_table(
     # Initialize session state for page size if it doesn't exist
     if f"{key_prefix}_page_size" not in st.session_state:
         st.session_state[f"{key_prefix}_page_size"] = page_size
+    page_size = int(st.session_state[f"{key_prefix}_page_size"])
+    visible_rows = min(max(len(df), 1), page_size)
+    if height is None:
+        height = (
+            _GRID_HEADER_HEIGHT
+            + (visible_rows * _GRID_ROW_HEIGHT)
+            + _GRID_PAGINATION_HEIGHT
+            + _GRID_BORDER_HEIGHT
+        )
 
     # --- Build grid options from dataframe ---
     gb = GridOptionsBuilder.from_dataframe(df)
     gb.configure_pagination(
         enabled=True,
-        paginationAutoPageSize=True,
-        # paginationPageSize=st.session_state[f'{key_prefix}_page_size'],
+        paginationAutoPageSize=False,
+        paginationPageSize=page_size,
+    )
+    gb.configure_grid_options(
+        headerHeight=_GRID_HEADER_HEIGHT,
+        rowHeight=_GRID_ROW_HEIGHT,
+        paginationPageSizeSelector=False,
     )
 
     gb.configure_default_column(
@@ -70,6 +92,63 @@ def aggrid_table(
 
     # Fit columns on first load
     grid_options = gb.build()
+    reset_button_id = f"{key_prefix}_aggrid_reset_filters"
+    grid_options["onGridReady"] = JsCode(f"""
+        function(params) {{
+            const resetButtonId = {json.dumps(reset_button_id)};
+            const gridContainer = document.getElementById("gridContainer");
+            if (!gridContainer || document.getElementById(resetButtonId)) {{
+                return;
+            }}
+
+            const resetBar = document.createElement("div");
+            resetBar.id = resetButtonId;
+            resetBar.style.position = "absolute";
+            resetBar.style.left = "0";
+            resetBar.style.top = "0";
+            resetBar.style.transform = "translateY(-2.2rem)";
+            resetBar.style.display = "flex";
+            resetBar.style.justifyContent = "flex-start";
+            resetBar.style.pointerEvents = "none";
+            resetBar.style.zIndex = "10";
+
+            const resetButton = document.createElement("button");
+            resetButton.type = "button";
+            resetButton.textContent = "Filter der Tabelle zurücksetzen";
+            resetButton.style.backgroundColor = "#fff4bf";
+            resetButton.style.border = "1px solid #e4c34a";
+            resetButton.style.color = "#4f3f00";
+            resetButton.style.borderRadius = "6px";
+            resetButton.style.fontSize = "0.8rem";
+            resetButton.style.fontWeight = "600";
+            resetButton.style.lineHeight = "1.1";
+            resetButton.style.minHeight = "1.75rem";
+            resetButton.style.padding = "0.15rem 0.55rem";
+            resetButton.style.cursor = "pointer";
+            resetButton.style.pointerEvents = "auto";
+            resetButton.addEventListener("mouseenter", function() {{
+                resetButton.style.backgroundColor = "#ffe88a";
+                resetButton.style.borderColor = "#c7a629";
+                resetButton.style.color = "#3f3200";
+            }});
+            resetButton.addEventListener("mouseleave", function() {{
+                resetButton.style.backgroundColor = "#fff4bf";
+                resetButton.style.borderColor = "#e4c34a";
+                resetButton.style.color = "#4f3f00";
+            }});
+            resetButton.addEventListener("click", function(event) {{
+                event.preventDefault();
+                event.stopPropagation();
+                params.api.setFilterModel(null);
+                params.api.onFilterChanged();
+                params.api.paginationGoToFirstPage();
+            }});
+
+            resetBar.appendChild(resetButton);
+            gridContainer.style.position = "relative";
+            gridContainer.appendChild(resetBar);
+        }}
+        """)
 
     # --- Scoped CSS: restrained header + clean grid lines ---
     container_id = f"agc_{key_prefix}"
@@ -94,6 +173,9 @@ def aggrid_table(
             border-radius: 10px !important;
             overflow: hidden !important;
         }}
+        #{container_id} {{
+            margin-top: 2.2rem;
+        }}
         </style>
         """,
         unsafe_allow_html=True,
@@ -107,7 +189,9 @@ def aggrid_table(
             gridOptions=grid_options,
             height=height,
             theme=theme,
+            allow_unsafe_jscode=True,
             update_mode=GridUpdateMode.NO_UPDATE,
+            update_on=[],
             fit_columns_on_grid_load=False,
             columns_auto_size_mode=ColumnsAutoSizeMode.NO_AUTOSIZE,
             key=key_prefix,
