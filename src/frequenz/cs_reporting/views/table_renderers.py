@@ -130,7 +130,7 @@ def render_table_section(
     """
     safe_df = df if (df is not None and not df.empty) else pd.DataFrame()
     display_df = _round_numeric_columns(safe_df)
-    header_cols = st.columns([8, 1])
+    header_cols = st.columns([1, 0.125])
     if caption:
         header_cols[0].caption(caption)
     else:
@@ -164,7 +164,7 @@ def render_master_df(master_df: pd.DataFrame, mapper: ColumnMapper) -> None:
         Streamlit components are rendered directly.
     """
     if master_df is not None and not master_df.empty:
-        header_cols = st.columns([10, 1])
+        header_cols = st.columns([1, 0.125])
         header_cols[0].caption("Standardized master dataframe")
         display_df = _round_numeric_columns(
             mapper.to_display(master_df).rename(columns=_MASTER_DF_DISPLAY_RENAMES)
@@ -174,7 +174,7 @@ def render_master_df(master_df: pd.DataFrame, mapper: ColumnMapper) -> None:
         )
         _style_download_button(header_cols[1])
         header_cols[1].download_button(
-            label="Download Gesamt-Datensatz",
+            label="CSV herunterladen",
             data=master_csv,
             file_name="master_df.csv",
             mime="text/csv",
@@ -214,12 +214,19 @@ def render_data_tabs(
         st.info("Keine Datentabellen verfügbar.")
         return
 
-    tab_labels = [spec["label"] for spec in available_specs]
+    tab_labels = []
     if include_master:
         tab_labels.append("Gesamt-Datensatz")
+    tab_labels.extend(spec["label"] for spec in available_specs)
     tabs = st.tabs(tab_labels)
 
-    for tab, spec in zip(tabs, available_specs):
+    table_tabs = tabs
+    if include_master:
+        with tabs[0]:
+            render_master_df(master_df, mapper)
+        table_tabs = tabs[1:]
+
+    for tab, spec in zip(table_tabs, available_specs):
         value = tables_dict.get(spec["table_key"])
         with tab:
             render_table_section(
@@ -228,7 +235,3 @@ def render_data_tabs(
                 caption=spec.get("caption"),
                 empty_info=spec.get("empty_info"),
             )
-
-    if include_master:
-        with tabs[-1]:
-            render_master_df(master_df, mapper)
