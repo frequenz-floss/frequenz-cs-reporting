@@ -84,6 +84,68 @@ def _prepare_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+def _format_data_loading_error(exc: Exception, microgrid_id: int) -> str:
+    """Return a user-facing error message for a data loading failure."""
+    detail = str(exc).strip()
+    detail_suffix = f"\n\nDetails: {detail}" if detail else ""
+
+    if isinstance(exc, TimeoutError):
+        return (
+            "Zeitüberschreitung beim Laden der Microgrid-Daten. "
+            "Bitte wählen Sie einen kleineren Zeitraum oder versuchen Sie es erneut."
+            f"{detail_suffix}"
+        )
+
+    if isinstance(exc, KeyError):
+        return (
+            f"Microgrid {microgrid_id} wurde in den geladenen Konfigurationen "
+            f"nicht gefunden.{detail_suffix}"
+        )
+
+    if isinstance(exc, ValueError):
+        return (
+            "Die ausgewählten Filterparameter sind ungültig. "
+            "Bitte prüfen Sie Zeitraum, Zeitzone und Auflösung."
+            f"{detail_suffix}"
+        )
+
+    if isinstance(exc, RuntimeError):
+        if "environment variable" in detail:
+            return (
+                "Eine benötigte Umgebungsvariable fehlt. "
+                "Bitte prüfen Sie die API- und Service-Konfiguration."
+                f"{detail_suffix}"
+            )
+        if "config directory" in detail or "config files" in detail:
+            return (
+                "Microgrid-Konfigurationen konnten nicht geladen werden. "
+                "Bitte prüfen Sie das konfigurierte TOML-Verzeichnis."
+                f"{detail_suffix}"
+            )
+        if "active event loop" in detail:
+            return (
+                "Interner Laufzeitfehler beim Laden der Daten. "
+                "Der Datenabruf wurde aus einem ungültigen Kontext gestartet."
+                f"{detail_suffix}"
+            )
+        return (
+            "Microgrid-Daten konnten wegen eines Laufzeitfehlers nicht geladen werden."
+            f"{detail_suffix}"
+        )
+
+    if isinstance(exc, OSError):
+        return (
+            "Die Reporting-API konnte nicht erreicht werden. "
+            "Bitte prüfen Sie Netzwerkverbindung, API-URL und Zugangsdaten."
+            f"{detail_suffix}"
+        )
+
+    return (
+        "Beim Laden der Microgrid-Daten ist ein unerwarteter Fehler aufgetreten."
+        f"{detail_suffix}"
+    )
+
+
 # pylint: disable=too-many-locals
 def render() -> None:
     """Render the Frequenz Reporting Dashboard page.
@@ -131,16 +193,14 @@ def render() -> None:
         st.error(str(exc))
         st.stop()
 
-    # Fetch microgrid configuration
-    component_types = list(get_component_types(microgrid_id))
-    mcfg = get_microgrid_config(microgrid_id)
-
     # We extend the fetch end date by 1 day to ensure the API returns data
     # for the full duration of the selected end_time.
 
     # Fetch data with error handling
     try:
         with st.spinner("Microgrid-Daten werden geladen..."):
+            component_types = list(get_component_types(microgrid_id))
+            mcfg = get_microgrid_config(microgrid_id)
             df = get_microgrid_data(
                 microgrid_id=microgrid_id,
                 start_date=start_time,
@@ -148,8 +208,8 @@ def render() -> None:
                 end_date=end_time,
                 resolution=resolution,
             )
-    except (RuntimeError, ValueError, OSError) as e:
-        st.error(f"Daten konnten nicht geladen werden: {e}")
+    except Exception as exc:  # pylint: disable=broad-except
+        st.error(_format_data_loading_error(exc, microgrid_id))
         st.stop()
 
     # Check for empty results
