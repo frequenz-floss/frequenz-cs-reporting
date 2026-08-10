@@ -22,7 +22,10 @@ from frequenz.cs_reporting.services.client_factory import (
     get_component_types,
     get_microgrid_config,
 )
-from frequenz.cs_reporting.services.data_service import get_microgrid_data
+from frequenz.cs_reporting.services.data_service import (
+    get_microgrid_data,
+    get_microgrid_soc_data,
+)
 from frequenz.cs_reporting.views.dashboard import build_master_df, render_dashboard
 
 
@@ -206,6 +209,21 @@ def render() -> None:
                 end_date=end_time,
                 resolution=resolution,
             )
+            battery_soc_df = None
+            if "battery" in component_types:
+                try:
+                    fetched_soc_df = get_microgrid_soc_data(
+                        microgrid_id=microgrid_id,
+                        start_date=start_time,
+                        end_date=end_time,
+                        resolution=resolution,
+                    )
+                except Exception as exc:  # pylint: disable=broad-except
+                    st.warning(
+                        f"Batterie-SOC-Daten konnten nicht geladen werden: {exc}"
+                    )
+                else:
+                    battery_soc_df = None if fetched_soc_df.empty else fetched_soc_df
     except Exception as exc:  # pylint: disable=broad-except
         st.error(_format_data_loading_error(exc, microgrid_id))
         st.stop()
@@ -226,6 +244,7 @@ def render() -> None:
         mcfg,
         mapper,
         timezone=timezone,
+        battery_soc_df=battery_soc_df,
     )
     render_dashboard(
         master_df,
