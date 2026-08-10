@@ -105,12 +105,6 @@ def _build_tables(
     }
 
     overview_df = build_overview_df(master_df, component_types)
-    if "day_ahead_price" in master_df.columns and "timestamp" in overview_df.columns:
-        overview_df = overview_df.merge(
-            master_df[["timestamp", "day_ahead_price"]],
-            on="timestamp",
-            how="left",
-        )
 
     return {
         "power_table": power_table,
@@ -124,12 +118,14 @@ def _build_tables(
     }
 
 
+# pylint: disable=too-many-arguments, too-many-positional-arguments
 def build_master_df(
     raw_df: pd.DataFrame,
     component_types: Iterable[str],
     mcfg: Any,
     mapper: ColumnMapper,
     timezone: str = "Europe/Berlin",
+    battery_soc_df: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
     """Transform raw microgrid data into master analysis dataframe.
 
@@ -146,6 +142,7 @@ def build_master_df(
             site-specific settings.
         mapper: Column name mapper for converting internal names to display names.
         timezone: Timezone name to use for the report timestamps.
+        battery_soc_df: Optional battery SOC dataframe to merge into the report.
 
     Returns:
         Master dataframe with processed and aggregated component data, ready for
@@ -171,6 +168,7 @@ def build_master_df(
         tz_name=timezone,
         assume_tz="UTC",
         component_display_names=component_display_names,
+        battery_soc_df=battery_soc_df,
     )
     try:
         master_df = merge_day_ahead_prices(
@@ -218,7 +216,7 @@ def render_dashboard(
 
     # --- Plots section---
     _section_divider("Diagramme & Zeitreihen")
-    sections.render_plots_tabs(tables, mapper)
+    sections.render_plots_tabs(tables, mapper, component_types)
 
     # --- Tables section---
     st.markdown('<div id="data-export-section"></div>', unsafe_allow_html=True)

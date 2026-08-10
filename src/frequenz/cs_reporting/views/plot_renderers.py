@@ -6,23 +6,21 @@
 from __future__ import annotations
 
 from functools import partial
-from typing import Callable
+from typing import Callable, Iterable
 
 import pandas as pd
+import plotly.graph_objects as go
 import streamlit as st
 from frequenz.lib.notebooks.reporting.plotter import (
     plot_energy_pie_chart,
     plot_time_series,
-    plot_time_series_battery_usecase,
+    plot_time_series_battery_soc,
+    plot_time_series_battery_soc_and_usecase,
 )
 from frequenz.lib.notebooks.reporting.utils.column_mapper import ColumnMapper
 
 from frequenz.cs_reporting.components.ui import render_plot_card
-from frequenz.cs_reporting.constants import (
-    COLOR_DICT,
-    COMPONENT_CONFIGS,
-    TablesResult,
-)
+from frequenz.cs_reporting.constants import COLOR_DICT, COMPONENT_CONFIGS, TablesResult
 
 _COMPONENT_TABS = [
     ("PV Leistung", "pv"),
@@ -34,6 +32,12 @@ _COMPONENT_TABS = [
 _BATTERY_OVERVIEW_HEIGHT = 580
 _BATTERY_OVERVIEW_MARGIN = {"t": 150, "r": 56, "b": 96, "l": 64}
 _BATTERY_OVERVIEW_RANGE_SLIDER_THICKNESS = 0.15
+
+
+def _left_align_plot_title(fig: object) -> None:
+    """Align Plotly figure titles with the left edge of the chart container."""
+    if isinstance(fig, go.Figure):
+        fig.update_layout(title={"x": 0, "xref": "container", "xanchor": "left"})
 
 
 # pylint: disable=too-many-arguments
@@ -92,7 +96,7 @@ def render_time_series(
         df,
         time_col=time_col,
         cols=cols,
-        title=title,
+        title="",
         xaxis_title=xaxis_title,
         yaxis_title=yaxis_title,
         legend_title=legend_title,
@@ -104,6 +108,12 @@ def render_time_series(
         dotted_cols=dotted_cols,
         plot_order=plot_order,
     )
+    fig.update_layout(
+        height=_BATTERY_OVERVIEW_HEIGHT,
+        margin=_BATTERY_OVERVIEW_MARGIN,
+        xaxis_rangeslider_thickness=_BATTERY_OVERVIEW_RANGE_SLIDER_THICKNESS,
+    )
+    _left_align_plot_title(fig)
 
     render_plot_card(title, fig)
 
@@ -194,64 +204,119 @@ def _prepare_battery_usecase_df(tables: TablesResult) -> pd.DataFrame | None:
     Returns:
         Battery-usecase dataframe, or ``None`` when unavailable.
     """
-    overview_df = tables.get("overview_df")
-    if overview_df is None or overview_df.empty:
+    battery_usecase_df = tables.get("overview_df")
+    if battery_usecase_df is None or battery_usecase_df.empty:
         return None
 
-    return overview_df.drop(columns={"grid_feed_in"}, errors="ignore")
+    return battery_usecase_df.drop(columns={"grid_feed_in"}, errors="ignore")
 
 
-def _render_overview_plot(overview_df: pd.DataFrame | None) -> None:
+def _render_overview_plot(battery_usecase_df: pd.DataFrame | None) -> None:
     """Render the main time-series overview plot.
 
     Args:
-        overview_df: Battery-usecase dataframe in canonical naming convention.
+        battery_usecase_df: Battery-usecase dataframe in canonical naming convention.
 
     Returns:
         Streamlit components are rendered directly.
     """
-    if overview_df is None or overview_df.empty:
+    if battery_usecase_df is None or battery_usecase_df.empty:
         st.info("Keine Übersichtsdaten zum Plotten verfügbar.")
         return
 
-    helper_cols = {"battery_charge", "battery_discharge"}
-    cols_list = [col for col in overview_df.columns if col not in helper_cols]
+    cols_list = battery_usecase_df.columns.tolist()
     secondary_y_cols = (
-        ["day_ahead_price"] if "day_ahead_price" in overview_df.columns else None
+        ["day_ahead_price"] if "day_ahead_price" in battery_usecase_df.columns else None
     )
-    fig = plot_time_series_battery_usecase(
-        overview_df,
-        time_col="timestamp",
+    fig = plot_time_series_battery_soc_and_usecase(
+        battery_usecase_df,
         cols=cols_list,
+        time_col="timestamp",
+        battery_power_flow="battery_power_flow",
+        soc_pct="battery_soc_pct",
         legend_title=None,
         secondary_y_cols=secondary_y_cols,
-        secondary_y_title="EUR/MWh" if secondary_y_cols else None,
+        secondary_y_title="EUR/MWh",
         title="",
         dotted_cols=[
             "grid_consumption_without_battery",
             "peak_before_optimization",
             "day_ahead_price",
         ],
-        stack_mode="psc",
+        stack_mode="energy_balance",
+        xaxis_title="Zeitpunkt",
+        yaxis_title="kW",
+        soc_secondary_y_title="SOC [%]",
     )
     fig.update_layout(
         height=_BATTERY_OVERVIEW_HEIGHT,
         margin=_BATTERY_OVERVIEW_MARGIN,
         xaxis_rangeslider_thickness=_BATTERY_OVERVIEW_RANGE_SLIDER_THICKNESS,
     )
+    _left_align_plot_title(fig)
     render_plot_card("Lastgang Übersicht", fig)
 
 
+def _render_battery_soc_plot(battery_usecase_df: pd.DataFrame | None) -> None:
+    """Render the battery power flow and SOC plot.
+
+    Args:
+        battery_usecase_df: Battery-usecase dataframe in canonical naming convention.
+
+    Returns:
+        Streamlit components are rendered directly.
+    """
+    if battery_usecase_df is None or battery_usecase_df.empty:
+        st.info("Keine Batteriedaten zum Plotten verfügbar.")
+        return
+
+    required_cols = {"timestamp", "battery_power_flow", "battery_soc_pct"}
+    missing_cols = required_cols.difference(battery_usecase_df.columns)
+    if missing_cols:
+        st.info("Keine gültigen Batteriedaten für den SOC-Plot verfügbar.")
+        return
+
+    fig = plot_time_series_battery_soc(
+        battery_usecase_df,
+        time_col="timestamp",
+        title="",
+        xaxis_title="Zeitpunkt",
+        yaxis_title="kW",
+        battery_power_flow="battery_power_flow",
+        soc_pct="battery_soc_pct",
+        legend_title=None,
+        secondary_y_title="SOC [%]",
+    )
+    fig.update_layout(
+        height=_BATTERY_OVERVIEW_HEIGHT,
+        margin=_BATTERY_OVERVIEW_MARGIN,
+        xaxis_rangeslider_thickness=_BATTERY_OVERVIEW_RANGE_SLIDER_THICKNESS,
+    )
+    _left_align_plot_title(fig)
+    render_plot_card("Batterie Ladezustand", fig)
+
+
 def _get_active_tabs(
-    tables: TablesResult, mapper: ColumnMapper, palette: dict[str, str]
+    tables: TablesResult,
+    mapper: ColumnMapper,
+    palette: dict[str, str],
+    component_types: Iterable[str],
 ) -> list[tuple[str, Callable[[], None]]]:
     """Determine which tabs should be rendered based on data availability."""
     tabs = []
+    component_type_set = set(component_types)
 
     # 1. Overview Tab
     overview_df = _prepare_battery_usecase_df(tables)
     if overview_df is not None and not overview_df.empty:
         tabs.append(("Zeitreihen-Plot", lambda: _render_overview_plot(overview_df)))
+        if "battery" in component_type_set:
+            tabs.append(
+                (
+                    "Batterie SOC",
+                    lambda: _render_battery_soc_plot(overview_df),
+                )
+            )
 
     # 2. Energy Mix Tab
     power_table = tables.get("power_table")
@@ -293,6 +358,7 @@ def _get_active_tabs(
 def render_plots_tabs(
     tables: TablesResult,
     mapper: ColumnMapper,
+    component_types: Iterable[str],
     color_dict: dict[str, str] | None = None,
 ) -> None:
     """
@@ -301,12 +367,13 @@ def render_plots_tabs(
     Args:
         tables: The tables result containing data for the plots.
         mapper: The column mapper for renaming columns.
+        component_types: Component type identifiers present in the microgrid.
         color_dict: Optional color mapping for the plots.
     """
     palette = color_dict or COLOR_DICT
 
     # Get configuration of what to render
-    plot_tabs_config = _get_active_tabs(tables, mapper, palette)
+    plot_tabs_config = _get_active_tabs(tables, mapper, palette, component_types)
 
     if not plot_tabs_config:
         st.info("Keine Plot-Daten verfügbar.")
