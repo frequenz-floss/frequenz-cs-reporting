@@ -99,6 +99,43 @@ async def fetch_microgrid_data(
     return df.copy()
 
 
+async def fetch_microgrid_soc_data(
+    microgrid_id: int,
+    start_date: datetime,
+    end_date: datetime,
+    resolution: timedelta,
+    timeout: float = 30.0,
+) -> pd.DataFrame:
+    """Fetch battery SOC for a microgrid in ``[start_date, end_date)``.
+
+    Args:
+        microgrid_id: Identifier for the target microgrid.
+        start_date: Inclusive start date of the query range.
+        end_date: Exclusive end date of the query range.
+        resolution: Resampling period for the returned data.
+        timeout: Request timeout in seconds.
+
+    Returns:
+        Dataframe of battery SOC values. Empty when no SOC data is available.
+    """
+    start_iso, end_iso = validate_range(start_date, end_date)
+    client = get_microgrid_client(microgrid_id)
+
+    coro = client.soc(
+        microgrid_id=microgrid_id,
+        start=start_iso,
+        end=end_iso,
+        resampling_period=resolution,
+        keep_components=False,
+    )
+    with _quiet_expected_component_data_warnings():
+        df = await asyncio.wait_for(coro, timeout)
+
+    if df is None or (hasattr(df, "empty") and df.empty):
+        return pd.DataFrame()
+    return df.copy()
+
+
 # Cached sync wrapper for Streamlit pages
 @st.cache_data(ttl=300, show_spinner=False)
 def get_microgrid_data(
@@ -138,4 +175,42 @@ def get_microgrid_data(
     raise RuntimeError(
         "get_microgrid_data() called from within an active event loop. "
         "Use `await fetch_microgrid_data(...)` in async contexts."
+    )
+
+
+@st.cache_data(ttl=300, show_spinner=False)
+def get_microgrid_soc_data(
+    microgrid_id: int,
+    start_date: datetime,
+    end_date: datetime,
+    resolution: timedelta,
+    timeout: float = 30.0,
+) -> pd.DataFrame:
+    """Sync wrapper for battery SOC data with caching.
+
+    Args:
+        microgrid_id: Identifier for the target microgrid.
+        start_date: Inclusive start date of the query range.
+        end_date: Exclusive end date of the query range.
+        resolution: Resampling period for the returned data.
+        timeout: Request timeout in seconds.
+
+    Returns:
+        Dataframe of battery SOC values. Empty when no SOC data is available.
+
+    Raises:
+        RuntimeError: If invoked from within an active event loop instead of
+            using the async ``fetch_microgrid_soc_data``.
+    """
+    try:
+        asyncio.get_running_loop()
+    except RuntimeError:
+        return asyncio.run(
+            fetch_microgrid_soc_data(
+                microgrid_id, start_date, end_date, resolution, timeout=timeout
+            )
+        )
+    raise RuntimeError(
+        "get_microgrid_soc_data() called from within an active event loop. "
+        "Use `await fetch_microgrid_soc_data(...)` in async contexts."
     )
