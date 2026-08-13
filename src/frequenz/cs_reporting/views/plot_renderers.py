@@ -243,7 +243,7 @@ def _render_overview_plot(battery_usecase_df: pd.DataFrame | None) -> None:
             "peak_before_optimization",
             "day_ahead_price",
         ],
-        stack_mode="energy_balance",
+        stack_mode="psc",
         xaxis_title="Zeitpunkt",
         yaxis_title="kW",
         soc_secondary_y_title="SOC [%]",
@@ -304,6 +304,7 @@ def _get_active_tabs(
 ) -> list[tuple[str, Callable[[], None]]]:
     """Determine which tabs should be rendered based on data availability."""
     tabs = []
+    battery_soc_tab: tuple[str, Callable[[], None]] | None = None
     component_type_set = set(component_types)
 
     # 1. Overview Tab
@@ -311,11 +312,9 @@ def _get_active_tabs(
     if overview_df is not None and not overview_df.empty:
         tabs.append(("Zeitreihen-Plot", lambda: _render_overview_plot(overview_df)))
         if "battery" in component_type_set:
-            tabs.append(
-                (
-                    "Batterie SOC",
-                    lambda: _render_battery_soc_plot(overview_df),
-                )
+            battery_soc_tab = (
+                "Batterie SOC",
+                lambda: _render_battery_soc_plot(overview_df),
             )
 
     # 2. Energy Mix Tab
@@ -351,6 +350,9 @@ def _get_active_tabs(
                 color_dict=palette,
             )
             tabs.append((label, render_fn))
+
+    if battery_soc_tab is not None:
+        tabs.append(battery_soc_tab)
 
     return tabs
 
