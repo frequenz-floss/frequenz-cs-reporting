@@ -54,16 +54,26 @@ SECTION_SPECS: list[dict[str, Any]] = [
             {"label": "Netzbezug (kWh)", "key": "grid_consumption_sum"},
             {"label": "Netzeinspeisung (kWh)", "key": "grid_feed_in_sum"},
             {"label_fn": _peak_label, "key": "peak"},
-            {"label": "Kosten Netzbezug (€)", "key": "grid_import_cost_sum"},
-            {"label": "Erlös Netzeinspeisung (€)", "key": "grid_feed_in_revenue_sum"},
-            {"label": "", "key": None},
             {
-                "label": "Durchschnittspreis Netzbezug (ct/kWh)",
-                "key": "average_da_price_grid_import",
+                "label": "Prognostizierte Netzbezugskosten (€)",
+                "key": "grid_import_cost_sum",
+                "microgrid_ids": {231},
             },
             {
-                "label": "Durchschnittspreis Netzeinspeisung (ct/kWh)",
+                "label": "Prognostizierte Einspeiseerloese (€)",
+                "key": "grid_feed_in_revenue_sum",
+                "microgrid_ids": {231},
+            },
+            {"label": "", "key": None, "microgrid_ids": {231}},
+            {
+                "label": "Prognostizierter Preis (ct/kWh)",
+                "key": "average_da_price_grid_import",
+                "microgrid_ids": {231},
+            },
+            {
+                "label": "Prognostizierter Preis (ct/kWh)",
                 "key": "average_da_price_grid_feed_in",
+                "microgrid_ids": {231},
             },
         ],
     },
@@ -211,6 +221,7 @@ def _build_consumption_breakdown(metrics: dict[str, Any]) -> dict[str, float | N
 def render_summary_boxes(
     metrics: dict[str, Any],
     component_types: Iterable[str] | None = None,
+    microgrid_id: int | None = None,
 ) -> None:
     """Render overview metrics grouped into styled subsections.
 
@@ -218,6 +229,8 @@ def render_summary_boxes(
         metrics: Metrics dictionary containing aggregated KPI values.
         component_types: Optional iterable of component type identifiers present
             in the microgrid (e.g., ``{"pv", "chp"}``).
+        microgrid_id: Optional microgrid identifier used for microgrid-specific
+            KPI cards.
 
     Returns:
         Streamlit components are rendered directly.
@@ -264,6 +277,12 @@ def render_summary_boxes(
                 if spec.get("component_type") is None
                 or spec.get("component_type") in component_type_set
             ]
+        box_specs = [
+            spec
+            for spec in box_specs
+            if spec.get("microgrid_ids") is None
+            or microgrid_id in spec.get("microgrid_ids", set())
+        ]
         boxes = _materialize_boxes(box_specs, metrics)
         per_row = section.get("per_row", 3)
         render_box_grid(boxes, per_row=per_row, accent=accent)

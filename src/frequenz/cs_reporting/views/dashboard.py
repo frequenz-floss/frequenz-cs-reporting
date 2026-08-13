@@ -210,6 +210,7 @@ def render_dashboard(
     resolution: timedelta,
     component_types: Iterable[str],
     mapper: ColumnMapper,
+    microgrid_id: int,
 ) -> None:
     """Render the complete microgrid reporting dashboard.
 
@@ -225,6 +226,7 @@ def render_dashboard(
         component_types: List of component types present in the microgrid for
             dynamic tab generation.
         mapper: Column name mapper for display name standardization.
+        microgrid_id: Identifier of the selected microgrid.
 
     Returns:
         Renders Streamlit components directly to the app interface.
@@ -237,7 +239,7 @@ def render_dashboard(
 
     # --- Overview section---
     _section_divider("Übersicht", "KPIs")
-    sections.render_summary_boxes(tables["metrics"], component_types)
+    sections.render_summary_boxes(tables["metrics"], component_types, microgrid_id)
 
     # --- Plots section---
     _section_divider("Diagramme & Zeitreihen")
