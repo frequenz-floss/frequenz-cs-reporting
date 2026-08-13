@@ -49,9 +49,19 @@ def _peak_label(metrics: dict[str, object]) -> str:
     return f"Lastspitze (kW) — {metrics.get('peak_date')}"
 
 
+_INVOICING_WARNING = (
+    "Die dargestellten Preise und Daten basieren auf einer Prognose eigener "
+    "gemessener Werte und entsprechen nicht den offiziellen Daten des "
+    "Verteilernetzbetreibers. Für Abrechnungen sind ausschließlich die "
+    "Netzbetreiber-Daten maßgeblich, daher sind Abweichungen zu Rechnungswerten "
+    "möglich."
+)
+
+
 SECTION_SPECS: list[dict[str, Any]] = [
     {
         "title": "Netzkennzahlen",
+        "warning": _INVOICING_WARNING,
         "boxes": [
             {"label": "Netzbezug (kWh)", "key": "grid_consumption_sum"},
             {"label": "Netzeinspeisung (kWh)", "key": "grid_feed_in_sum"},
@@ -247,6 +257,7 @@ def _build_consumption_breakdown(metrics: dict[str, Any]) -> dict[str, float | N
     return {k: (float(v) if v is not None else 0.0) for k, v in values.items()}
 
 
+# pylint: disable=too-many-locals
 def render_summary_boxes(
     metrics: dict[str, Any],
     component_types: Iterable[str] | None = None,
@@ -304,12 +315,23 @@ def render_summary_boxes(
         accent = _SECTION_ACCENTS.get(title, "#3b82f6")
         icon = _SECTION_ICONS.get(title, "●")
         icon_bg = accent + "22"  # ~13% opacity hex approximation
+        warning = section.get("warning")
+        warning_html = (
+            f'<span class="kpi-section-warning" role="button" tabindex="0" '
+            f'aria-label="{warning}">'
+            '<span class="kpi-section-warning__icon">⚠</span>'
+            f'<span class="kpi-section-warning__tooltip">{warning}</span>'
+            "</span>"
+            if warning
+            else ""
+        )
 
         st.markdown(
             f"""
             <div class="kpi-section-header">
                 <div class="kpi-section-icon" style="background:{icon_bg};">{icon}</div>
                 <p class="kpi-section-title">{title}</p>
+                {warning_html}
             </div>
             """,
             unsafe_allow_html=True,
