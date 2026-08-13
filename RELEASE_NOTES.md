@@ -8,9 +8,11 @@
 
 ## New Features
 
-- Fetch and cache battery state-of-charge data for microgrids with batteries.
-- Add a dedicated "Batterie SOC" plot tab showing battery power flow and state of charge.
+- Add forecasted grid import cost, grid feed-in revenue, and average day-ahead
+  price KPI cards for MID231.
+- Add a separate battery KPI card section with battery flow metrics.
 
 ## Bug Fixes
-- Update the table filtering logic to work in deepnote.
 
+- Add Battery SOC plot tab only for the applicable cases.
+- Use PSC stack mode for the overview time-series plot.

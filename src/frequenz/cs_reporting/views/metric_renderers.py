@@ -26,6 +26,7 @@ _SECTION_ACCENTS: dict[str, str] = {
     "Netzkennzahlen": "#3b82f6",  # blue  – grid
     "(Eigen-)Erzeugungskennzahlen": "#10b981",  # green – generation
     "Verbrauchskennzahlen": "#f59e0b",  # amber – consumption
+    "Batteriekennzahlen": "#14b8a6",  # teal – battery
     "Bilanzkennzahlen": "#8b5cf6",  # purple – balance ratios
 }
 
@@ -33,6 +34,7 @@ _SECTION_ICONS: dict[str, str] = {
     "Netzkennzahlen": "⚡",
     "(Eigen-)Erzeugungskennzahlen": "☀",
     "Verbrauchskennzahlen": "📊",
+    "Batteriekennzahlen": "🔋",
     "Bilanzkennzahlen": "⚖",
 }
 
@@ -47,13 +49,44 @@ def _peak_label(metrics: dict[str, object]) -> str:
     return f"Lastspitze (kW) — {metrics.get('peak_date')}"
 
 
+_INVOICING_WARNING = (
+    "Die dargestellten Preise und Daten basieren auf einer Prognose eigener "
+    "gemessener Werte und entsprechen nicht den offiziellen Daten des "
+    "Verteilernetzbetreibers. Für Abrechnungen sind ausschließlich die "
+    "Netzbetreiber-Daten maßgeblich, daher sind Abweichungen zu Rechnungswerten "
+    "möglich."
+)
+
+
 SECTION_SPECS: list[dict[str, Any]] = [
     {
         "title": "Netzkennzahlen",
+        "warning": _INVOICING_WARNING,
         "boxes": [
             {"label": "Netzbezug (kWh)", "key": "grid_consumption_sum"},
             {"label": "Netzeinspeisung (kWh)", "key": "grid_feed_in_sum"},
             {"label_fn": _peak_label, "key": "peak"},
+            {
+                "label": "Prognostizierte Netzbezugskosten (€)",
+                "key": "grid_import_cost_sum",
+                "microgrid_ids": {231},
+            },
+            {
+                "label": "Prognostizierte Einspeiseerloese (€)",
+                "key": "grid_feed_in_revenue_sum",
+                "microgrid_ids": {231},
+            },
+            {"label": "", "key": None, "microgrid_ids": {231}},
+            {
+                "label": "Prognostizierter Preis (ct/kWh)",
+                "key": "average_da_price_grid_import",
+                "microgrid_ids": {231},
+            },
+            {
+                "label": "Prognostizierter Preis (ct/kWh)",
+                "key": "average_da_price_grid_feed_in",
+                "microgrid_ids": {231},
+            },
         ],
     },
     {
@@ -83,6 +116,33 @@ SECTION_SPECS: list[dict[str, Any]] = [
         "boxes": [
             {"label": "Gesamtverbrauch Strom (kWh)", "key": "mid_consumption_sum"},
             {"label": "Eigenverbrauch (kWh)", "key": "prod_self_consumption_sum"},
+        ],
+    },
+    {
+        "title": "Batteriekennzahlen",
+        "per_row": 3,
+        "boxes": [
+            {
+                "label": "Erzeugung zu Batterie (kWh)",
+                "key": "production_to_battery_sum",
+                "component_type": "battery",
+            },
+            {
+                "label": "Netz zu Batterie (kWh)",
+                "key": "grid_to_battery_sum",
+                "component_type": "battery",
+            },
+            {"label": "", "key": None},
+            {
+                "label": "Batterie zu Netz (kWh)",
+                "key": "battery_to_grid_sum",
+                "component_type": "battery",
+            },
+            {
+                "label": "Batterie zu Verbrauch (kWh)",
+                "key": "battery_to_consumption_sum",
+                "component_type": "battery",
+            },
         ],
     },
     {
@@ -197,9 +257,11 @@ def _build_consumption_breakdown(metrics: dict[str, Any]) -> dict[str, float | N
     return {k: (float(v) if v is not None else 0.0) for k, v in values.items()}
 
 
+# pylint: disable=too-many-locals
 def render_summary_boxes(
     metrics: dict[str, Any],
     component_types: Iterable[str] | None = None,
+    microgrid_id: int | None = None,
 ) -> None:
     """Render overview metrics grouped into styled subsections.
 
@@ -207,6 +269,8 @@ def render_summary_boxes(
         metrics: Metrics dictionary containing aggregated KPI values.
         component_types: Optional iterable of component type identifiers present
             in the microgrid (e.g., ``{"pv", "chp"}``).
+        microgrid_id: Optional microgrid identifier used for microgrid-specific
+            KPI cards.
 
     Returns:
         Streamlit components are rendered directly.
@@ -230,21 +294,6 @@ def render_summary_boxes(
     )
 
     for section in SECTION_SPECS:
-        title = section["title"]
-        accent = _SECTION_ACCENTS.get(title, "#3b82f6")
-        icon = _SECTION_ICONS.get(title, "●")
-        icon_bg = accent + "22"  # ~13% opacity hex approximation
-
-        st.markdown(
-            f"""
-            <div class="kpi-section-header">
-                <div class="kpi-section-icon" style="background:{icon_bg};">{icon}</div>
-                <p class="kpi-section-title">{title}</p>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
         box_specs = section["boxes"]
         if component_type_set:
             box_specs = [
@@ -253,6 +302,41 @@ def render_summary_boxes(
                 if spec.get("component_type") is None
                 or spec.get("component_type") in component_type_set
             ]
+        box_specs = [
+            spec
+            for spec in box_specs
+            if spec.get("microgrid_ids") is None
+            or microgrid_id in spec.get("microgrid_ids", set())
+        ]
+        if not box_specs:
+            continue
+
+        title = section["title"]
+        accent = _SECTION_ACCENTS.get(title, "#3b82f6")
+        icon = _SECTION_ICONS.get(title, "●")
+        icon_bg = accent + "22"  # ~13% opacity hex approximation
+        warning = section.get("warning")
+        warning_html = (
+            f'<span class="kpi-section-warning" role="button" tabindex="0" '
+            f'aria-label="{warning}">'
+            '<span class="kpi-section-warning__icon">⚠</span>'
+            f'<span class="kpi-section-warning__tooltip">{warning}</span>'
+            "</span>"
+            if warning
+            else ""
+        )
+
+        st.markdown(
+            f"""
+            <div class="kpi-section-header">
+                <div class="kpi-section-icon" style="background:{icon_bg};">{icon}</div>
+                <p class="kpi-section-title">{title}</p>
+                {warning_html}
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
         boxes = _materialize_boxes(box_specs, metrics)
         per_row = section.get("per_row", 3)
         render_box_grid(boxes, per_row=per_row, accent=accent)

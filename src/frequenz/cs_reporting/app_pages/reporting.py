@@ -251,6 +251,7 @@ def render() -> None:
         resolution=resolution,
         component_types=component_types,
         mapper=mapper,
+        microgrid_id=microgrid_id,
     )
     _scroll_to_section_if_requested()
 
