@@ -26,6 +26,7 @@ _SECTION_ACCENTS: dict[str, str] = {
     "Netzkennzahlen": "#3b82f6",  # blue  – grid
     "(Eigen-)Erzeugungskennzahlen": "#10b981",  # green – generation
     "Verbrauchskennzahlen": "#f59e0b",  # amber – consumption
+    "Batteriekennzahlen": "#14b8a6",  # teal – battery
     "Bilanzkennzahlen": "#8b5cf6",  # purple – balance ratios
 }
 
@@ -33,6 +34,7 @@ _SECTION_ICONS: dict[str, str] = {
     "Netzkennzahlen": "⚡",
     "(Eigen-)Erzeugungskennzahlen": "☀",
     "Verbrauchskennzahlen": "📊",
+    "Batteriekennzahlen": "🔋",
     "Bilanzkennzahlen": "⚖",
 }
 
@@ -104,6 +106,33 @@ SECTION_SPECS: list[dict[str, Any]] = [
         "boxes": [
             {"label": "Gesamtverbrauch Strom (kWh)", "key": "mid_consumption_sum"},
             {"label": "Eigenverbrauch (kWh)", "key": "prod_self_consumption_sum"},
+        ],
+    },
+    {
+        "title": "Batteriekennzahlen",
+        "per_row": 3,
+        "boxes": [
+            {
+                "label": "Erzeugung zu Batterie (kWh)",
+                "key": "production_to_battery_sum",
+                "component_type": "battery",
+            },
+            {
+                "label": "Netz zu Batterie (kWh)",
+                "key": "grid_to_battery_sum",
+                "component_type": "battery",
+            },
+            {"label": "", "key": None},
+            {
+                "label": "Batterie zu Netz (kWh)",
+                "key": "battery_to_grid_sum",
+                "component_type": "battery",
+            },
+            {
+                "label": "Batterie zu Verbrauch (kWh)",
+                "key": "battery_to_consumption_sum",
+                "component_type": "battery",
+            },
         ],
     },
     {
@@ -254,6 +283,23 @@ def render_summary_boxes(
     )
 
     for section in SECTION_SPECS:
+        box_specs = section["boxes"]
+        if component_type_set:
+            box_specs = [
+                spec
+                for spec in box_specs
+                if spec.get("component_type") is None
+                or spec.get("component_type") in component_type_set
+            ]
+        box_specs = [
+            spec
+            for spec in box_specs
+            if spec.get("microgrid_ids") is None
+            or microgrid_id in spec.get("microgrid_ids", set())
+        ]
+        if not box_specs:
+            continue
+
         title = section["title"]
         accent = _SECTION_ACCENTS.get(title, "#3b82f6")
         icon = _SECTION_ICONS.get(title, "●")
@@ -269,20 +315,6 @@ def render_summary_boxes(
             unsafe_allow_html=True,
         )
 
-        box_specs = section["boxes"]
-        if component_type_set:
-            box_specs = [
-                spec
-                for spec in box_specs
-                if spec.get("component_type") is None
-                or spec.get("component_type") in component_type_set
-            ]
-        box_specs = [
-            spec
-            for spec in box_specs
-            if spec.get("microgrid_ids") is None
-            or microgrid_id in spec.get("microgrid_ids", set())
-        ]
         boxes = _materialize_boxes(box_specs, metrics)
         per_row = section.get("per_row", 3)
         render_box_grid(boxes, per_row=per_row, accent=accent)
