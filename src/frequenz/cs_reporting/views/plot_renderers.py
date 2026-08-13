@@ -29,15 +29,26 @@ _COMPONENT_TABS = [
     ("KWK", "chp"),
     ("EV", "ev"),
 ]
-_BATTERY_OVERVIEW_HEIGHT = 580
-_BATTERY_OVERVIEW_MARGIN = {"t": 150, "r": 56, "b": 96, "l": 64}
-_BATTERY_OVERVIEW_RANGE_SLIDER_THICKNESS = 0.15
+_TIME_SERIES_HEIGHT = 500
+_TIME_SERIES_MARGIN = {"t": 80, "r": 64, "b": 96, "l": 64}
+_TIME_SERIES_RANGE_SLIDER_THICKNESS = 0.15
 
 
 def _left_align_plot_title(fig: object) -> None:
     """Align Plotly figure titles with the left edge of the chart container."""
     if isinstance(fig, go.Figure):
         fig.update_layout(title={"x": 0, "xref": "container", "xanchor": "left"})
+
+
+def _apply_compact_time_series_layout(fig: go.Figure) -> None:
+    """Reduce time-series plot size without changing the visible data range."""
+    fig.update_layout(
+        height=_TIME_SERIES_HEIGHT,
+        margin=_TIME_SERIES_MARGIN,
+        xaxis_rangeslider_thickness=_TIME_SERIES_RANGE_SLIDER_THICKNESS,
+    )
+    fig.update_xaxes(autorange=True, range=None)
+    fig.update_yaxes(autorange=True, range=None)
 
 
 # pylint: disable=too-many-arguments
@@ -108,11 +119,7 @@ def render_time_series(
         dotted_cols=dotted_cols,
         plot_order=plot_order,
     )
-    fig.update_layout(
-        height=_BATTERY_OVERVIEW_HEIGHT,
-        margin=_BATTERY_OVERVIEW_MARGIN,
-        xaxis_rangeslider_thickness=_BATTERY_OVERVIEW_RANGE_SLIDER_THICKNESS,
-    )
+    _apply_compact_time_series_layout(fig)
     _left_align_plot_title(fig)
 
     render_plot_card(title, fig)
@@ -248,11 +255,7 @@ def _render_overview_plot(battery_usecase_df: pd.DataFrame | None) -> None:
         yaxis_title="kW",
         soc_secondary_y_title="SOC [%]",
     )
-    fig.update_layout(
-        height=_BATTERY_OVERVIEW_HEIGHT,
-        margin=_BATTERY_OVERVIEW_MARGIN,
-        xaxis_rangeslider_thickness=_BATTERY_OVERVIEW_RANGE_SLIDER_THICKNESS,
-    )
+    _apply_compact_time_series_layout(fig)
     _left_align_plot_title(fig)
     render_plot_card("Lastgang Übersicht", fig)
 
@@ -287,11 +290,7 @@ def _render_battery_soc_plot(battery_usecase_df: pd.DataFrame | None) -> None:
         legend_title=None,
         secondary_y_title="SOC [%]",
     )
-    fig.update_layout(
-        height=_BATTERY_OVERVIEW_HEIGHT,
-        margin=_BATTERY_OVERVIEW_MARGIN,
-        xaxis_rangeslider_thickness=_BATTERY_OVERVIEW_RANGE_SLIDER_THICKNESS,
-    )
+    _apply_compact_time_series_layout(fig)
     _left_align_plot_title(fig)
     render_plot_card("Batterie Ladezustand", fig)
 
