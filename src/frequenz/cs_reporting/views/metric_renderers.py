@@ -54,6 +54,17 @@ SECTION_SPECS: list[dict[str, Any]] = [
             {"label": "Netzbezug (kWh)", "key": "grid_consumption_sum"},
             {"label": "Netzeinspeisung (kWh)", "key": "grid_feed_in_sum"},
             {"label_fn": _peak_label, "key": "peak"},
+            {"label": "Kosten Netzbezug (€)", "key": "grid_import_cost_sum"},
+            {"label": "Erlös Netzeinspeisung (€)", "key": "grid_feed_in_revenue_sum"},
+            {"label": "", "key": None},
+            {
+                "label": "Durchschnittspreis Netzbezug (ct/kWh)",
+                "key": "average_da_price_grid_import",
+            },
+            {
+                "label": "Durchschnittspreis Netzeinspeisung (ct/kWh)",
+                "key": "average_da_price_grid_feed_in",
+            },
         ],
     },
     {

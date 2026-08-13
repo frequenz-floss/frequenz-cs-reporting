@@ -56,6 +56,25 @@ def _section_divider(label: str = "", badge: str = "") -> None:
         )
 
 
+def _numeric_metric(metrics: dict[str, float | str | None], key: str) -> float | None:
+    """Return a metric value as a float when it is numeric."""
+    value = metrics.get(key)
+    if isinstance(value, (int, float)):
+        return float(value)
+    return None
+
+
+def _average_price_ct_per_kwh(
+    metrics: dict[str, float | str | None], value_key: str, energy_key: str
+) -> float | None:
+    """Calculate an average price in ct/kWh from euro and kWh metric values."""
+    value = _numeric_metric(metrics, value_key)
+    energy = _numeric_metric(metrics, energy_key)
+    if value is None or energy is None or energy == 0.0:
+        return None
+    return (value * 100) / energy
+
+
 @st.cache_data(show_spinner="Preparing analysis tables…")
 def _build_tables(
     master_df: pd.DataFrame,
@@ -91,7 +110,13 @@ def _build_tables(
         is automatically invalidated when any input parameters change.
     """
     power_table = compute_energy_summary(master_df, resolution)
-    metrics = aggregate_metrics(master_df, resolution)
+    metrics = aggregate_metrics(master_df, resolution, price_column="day_ahead_price")
+    metrics["average_da_price_grid_import"] = _average_price_ct_per_kwh(
+        metrics, "grid_import_cost_sum", "grid_consumption_sum"
+    )
+    metrics["average_da_price_grid_feed_in"] = _average_price_ct_per_kwh(
+        metrics, "grid_feed_in_revenue_sum", "grid_feed_in_sum"
+    )
 
     # Build component analyses using configuration
     analyses = {
