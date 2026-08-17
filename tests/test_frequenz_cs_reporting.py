@@ -8,6 +8,10 @@ from datetime import UTC, date, datetime, timedelta
 import pytest
 
 from frequenz.cs_reporting.utils import time
+from frequenz.cs_reporting.views.metric_renderers import (
+    SECTION_SPECS,
+    _filter_section_box_specs,
+)
 
 
 def test_validate_range_accepts_chronological_values() -> None:
@@ -28,3 +32,35 @@ def test_validate_range_rejects_invalid_order() -> None:
         time.validate_range("2024-01-02", "2024-01-02")
     with pytest.raises(ValueError):
         time.validate_range("2024-01-03", "2024-01-02")
+
+
+def test_battery_kpi_section_is_hidden_without_battery_component() -> None:
+    """Battery KPI specs are removed when the MID has no battery component."""
+    battery_section = next(
+        section for section in SECTION_SPECS if section["title"] == "Batteriekennzahlen"
+    )
+
+    box_specs = _filter_section_box_specs(
+        battery_section,
+        component_type_set={"grid", "pv"},
+        component_types_provided=True,
+        microgrid_id=123,
+    )
+
+    assert box_specs == []
+
+
+def test_battery_kpi_section_is_shown_with_battery_component() -> None:
+    """Battery KPI specs are kept when the MID has a battery component."""
+    battery_section = next(
+        section for section in SECTION_SPECS if section["title"] == "Batteriekennzahlen"
+    )
+
+    box_specs = _filter_section_box_specs(
+        battery_section,
+        component_type_set={"battery", "grid", "pv"},
+        component_types_provided=True,
+        microgrid_id=123,
+    )
+
+    assert box_specs

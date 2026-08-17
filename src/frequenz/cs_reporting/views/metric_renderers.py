@@ -120,6 +120,7 @@ SECTION_SPECS: list[dict[str, Any]] = [
     },
     {
         "title": "Batteriekennzahlen",
+        "required_component_type": "battery",
         "per_row": 3,
         "boxes": [
             {
@@ -182,6 +183,38 @@ def _materialize_boxes(
 
         boxes.append((label, value))
     return boxes
+
+
+def _filter_section_box_specs(
+    section: dict[str, Any],
+    component_type_set: set[str],
+    component_types_provided: bool,
+    microgrid_id: int | None,
+) -> list[dict[str, Any]]:
+    """Return KPI box specs that apply to the selected microgrid."""
+    required_component_type = section.get("required_component_type")
+    if (
+        component_types_provided
+        and required_component_type is not None
+        and required_component_type not in component_type_set
+    ):
+        return []
+
+    box_specs = section["boxes"]
+    if component_types_provided:
+        box_specs = [
+            spec
+            for spec in box_specs
+            if spec.get("component_type") is None
+            or spec.get("component_type") in component_type_set
+        ]
+
+    return [
+        spec
+        for spec in box_specs
+        if spec.get("microgrid_ids") is None
+        or microgrid_id in spec.get("microgrid_ids", set())
+    ]
 
 
 def render_box_grid(
@@ -280,6 +313,7 @@ def render_summary_boxes(
         return
 
     _ensure_kpi_css()
+    component_types_provided = component_types is not None
     component_type_set = set(component_types or [])
 
     # Section heading
@@ -294,20 +328,12 @@ def render_summary_boxes(
     )
 
     for section in SECTION_SPECS:
-        box_specs = section["boxes"]
-        if component_type_set:
-            box_specs = [
-                spec
-                for spec in box_specs
-                if spec.get("component_type") is None
-                or spec.get("component_type") in component_type_set
-            ]
-        box_specs = [
-            spec
-            for spec in box_specs
-            if spec.get("microgrid_ids") is None
-            or microgrid_id in spec.get("microgrid_ids", set())
-        ]
+        box_specs = _filter_section_box_specs(
+            section,
+            component_type_set,
+            component_types_provided,
+            microgrid_id,
+        )
         if not box_specs:
             continue
 
