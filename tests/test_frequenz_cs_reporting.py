@@ -10,6 +10,7 @@ import pytest
 from frequenz.cs_reporting.utils import time
 from frequenz.cs_reporting.views.metric_renderers import (
     SECTION_SPECS,
+    _build_consumption_breakdown,
     _filter_section_box_specs,
 )
 
@@ -64,3 +65,25 @@ def test_battery_kpi_section_is_shown_with_battery_component() -> None:
     )
 
     assert box_specs
+
+
+def test_consumption_breakdown_shows_sources_serving_consumption() -> None:
+    """The Stromverbrauch bar is split by sources that serve local consumption."""
+    breakdown = _build_consumption_breakdown(
+        {
+            "mid_consumption_sum": 100.0,
+            "grid_consumption_sum": 70.0,
+            "grid_to_battery_sum": 10.0,
+            "prod_self_consumption_sum": 30.0,
+            "battery_to_consumption_sum": 10.0,
+            "grid_feed_in_sum": 5.0,
+            "pv_production_sum": 40.0,
+        }
+    )
+
+    assert breakdown == {
+        "Stromverbrauch (kWh)": 100.0,
+        "Netz zu Verbrauch (kWh)": 60.0,
+        "Erzeugung zu Verbrauch (kWh)": 30.0,
+        "Batterie zu Verbrauch (kWh)": 10.0,
+    }
