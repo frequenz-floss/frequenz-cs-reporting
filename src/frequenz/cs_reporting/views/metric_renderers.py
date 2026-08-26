@@ -279,13 +279,15 @@ def render_box_grid(
 
 def _build_consumption_breakdown(metrics: dict[str, Any]) -> dict[str, float | None]:
     """Prepare data for the percentage bar plot."""
+    grid_consumption = metrics.get("grid_consumption_sum") or 0.0
+    grid_to_battery = metrics.get("grid_to_battery_sum") or 0.0
     values = {
         "Stromverbrauch (kWh)": metrics.get("mid_consumption_sum"),
-        "Netzbezug (kWh)": metrics.get("grid_consumption_sum"),
-        "Netz Einspeisung (kWh)": -(metrics.get("grid_feed_in_sum") or 0),
-        "PV Gesamterzeugung (kWh)": metrics.get("pv_production_sum"),
-        "KWK Gesamterzeugung (kWh)": metrics.get("chp_production_sum"),
-        "Wind Gesamterzeugung (kWh)": metrics.get("wind_production_sum"),
+        "Netz zu Verbrauch (kWh)": max(
+            float(grid_consumption) - float(grid_to_battery), 0.0
+        ),
+        "Erzeugung zu Verbrauch (kWh)": metrics.get("prod_self_consumption_sum"),
+        "Batterie zu Verbrauch (kWh)": metrics.get("battery_to_consumption_sum"),
     }
     return {k: (float(v) if v is not None else 0.0) for k, v in values.items()}
 
