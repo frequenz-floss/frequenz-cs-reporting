@@ -210,7 +210,13 @@ def render() -> None:
                 resolution=resolution,
             )
             battery_soc_df = None
-            if "battery" in component_types:
+            battery_formula = (
+                mcfg.ctype["battery"].formula if "battery" in component_types else None
+            )
+            has_battery_soc_formula = (
+                battery_formula is not None and "BATTERY_SOC_PCT" in battery_formula
+            )
+            if has_battery_soc_formula:
                 try:
                     fetched_soc_df = get_microgrid_soc_data(
                         microgrid_id=microgrid_id,
