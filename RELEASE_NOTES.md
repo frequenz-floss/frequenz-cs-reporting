@@ -2,6 +2,7 @@
 
 ## Summary
 
+- v0.4.8 was not released because `pytest_min` was not satisfied. Everything else remains the same, but the minimum library requirements have been updated.
 
 ## Upgrading
 
@@ -10,5 +11,3 @@
 
 
 ## Bug Fixes
-
-- Avoid a dashboard crash when a configured battery component has no battery power-flow data in the selected report range.
