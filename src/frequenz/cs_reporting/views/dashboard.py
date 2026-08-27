@@ -75,6 +75,25 @@ def _average_price_ct_per_kwh(
     return (value * 100) / energy
 
 
+def _filter_component_types_for_master_df(
+    component_types: Iterable[str], master_df: pd.DataFrame
+) -> tuple[str, ...]:
+    """Keep only component types represented by the master dataframe columns."""
+    required_columns = {
+        "battery": {"battery_power_flow"},
+        "chp": {"chp_asset_production"},
+        "pv": {"pv_asset_production"},
+        "wind": {"wind_asset_production"},
+    }
+    columns = set(master_df.columns)
+
+    return tuple(
+        component_type
+        for component_type in component_types
+        if required_columns.get(component_type, set()).issubset(columns)
+    )
+
+
 @st.cache_data(show_spinner="Preparing analysis tables…")
 def _build_tables(
     master_df: pd.DataFrame,
@@ -109,6 +128,7 @@ def _build_tables(
         This function is cached with @st.cache_data for performance. The cache
         is automatically invalidated when any input parameters change.
     """
+    component_types = _filter_component_types_for_master_df(component_types, master_df)
     power_table = compute_energy_summary(master_df, resolution)
     metrics = aggregate_metrics(master_df, resolution, price_column="day_ahead_price")
     metrics["average_da_price_grid_import"] = _average_price_ct_per_kwh(
@@ -235,6 +255,7 @@ def render_dashboard(
         This function orchestrates the dashboard layout and delegates rendering
         to specialized section modules (summary_boxes, plots_tabs, data_tabs).
     """
+    component_types = _filter_component_types_for_master_df(component_types, master_df)
     tables = _build_tables(master_df, resolution, component_types)
 
     # --- Overview section---
