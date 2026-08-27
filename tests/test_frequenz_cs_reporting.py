@@ -5,9 +5,11 @@
 
 from datetime import UTC, date, datetime, timedelta
 
+import pandas as pd
 import pytest
 
 from frequenz.cs_reporting.utils import time
+from frequenz.cs_reporting.views.dashboard import _filter_component_types_for_master_df
 from frequenz.cs_reporting.views.metric_renderers import (
     SECTION_SPECS,
     _build_consumption_breakdown,
@@ -87,3 +89,22 @@ def test_consumption_breakdown_shows_sources_serving_consumption() -> None:
         "Erzeugung zu Verbrauch (kWh)": 30.0,
         "Batterie zu Verbrauch (kWh)": 10.0,
     }
+
+
+def test_component_types_exclude_battery_without_master_battery_power_flow() -> None:
+    """Battery is removed when the master dataframe lacks battery power flow."""
+    master_df = pd.DataFrame(
+        columns=[
+            "timestamp",
+            "grid_consumption",
+            "mid_consumption",
+            "grid_feed_in",
+            "pv_asset_production",
+        ]
+    )
+
+    component_types = _filter_component_types_for_master_df(
+        ["grid", "consumption", "pv", "battery"], master_df
+    )
+
+    assert component_types == ("grid", "consumption", "pv")
