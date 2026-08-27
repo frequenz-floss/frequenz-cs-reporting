@@ -5,7 +5,6 @@
 
 from __future__ import annotations
 
-import asyncio
 from datetime import timedelta
 from typing import Any, Iterable
 
@@ -16,7 +15,6 @@ from frequenz.lib.notebooks.reporting.asset_optimization.data import (
 )
 from frequenz.lib.notebooks.reporting.data_processing import create_energy_report_df
 from frequenz.lib.notebooks.reporting.utils.column_mapper import ColumnMapper
-from frequenz.lib.notebooks.reporting.utils.helpers import get_meter_display_names
 from frequenz.lib.notebooks.reporting.utils.reporting_nb_functions import (
     aggregate_metrics,
     build_component_analysis,
@@ -25,6 +23,7 @@ from frequenz.lib.notebooks.reporting.utils.reporting_nb_functions import (
 )
 
 from frequenz.cs_reporting.constants import COMPONENT_CONFIGS, TablesResult
+from frequenz.cs_reporting.services.client_factory import get_meter_display_names
 from frequenz.cs_reporting.ui_resources import inject_style, render_template
 from frequenz.cs_reporting.views import sections
 
@@ -202,9 +201,7 @@ def build_master_df(
         for c in component_types
         if pd.to_numeric(raw_df[c], errors="coerce").fillna(0).sum() != 0
     ]
-    component_display_names = asyncio.run(
-        get_meter_display_names(mcfg.meta.microgrid_id)
-    )
+    component_display_names = get_meter_display_names(mcfg.meta.microgrid_id)
     master_df = create_energy_report_df(
         raw_df,
         component_types,
