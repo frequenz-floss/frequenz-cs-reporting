@@ -11,6 +11,7 @@
 
 ## Bug Fixes
 
+- Fetch battery SOC data only when the microgrid has a battery component and a configured battery SOC formula.
 - Update the Stromverbrauch bar plot to break down consumption by the sources
   serving local load: grid to consumption, generation to consumption, and
   battery to consumption.
