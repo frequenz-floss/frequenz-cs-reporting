@@ -6,13 +6,14 @@
 from __future__ import annotations
 
 import importlib
-import sys
-from pathlib import Path
 import importlib.resources as resources
 import importlib.util
-import streamlit as st
-import pkgutil
 import os
+import pkgutil
+import sys
+from pathlib import Path
+
+import streamlit as st
 
 
 # --- Check if running in deepnote to pick up environment variables ---
