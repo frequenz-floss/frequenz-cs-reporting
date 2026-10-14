@@ -1382,6 +1382,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -1525,6 +1529,34 @@
   
   
     <li class="md-nav__item">
+      <a href="reference/frequenz/cs_reporting/services/deepnote_cache/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    deepnote_cache
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="reference/frequenz/cs_reporting/services/parquet_cache/" class="md-nav__link">
         
   
@@ -1533,6 +1565,34 @@
     
   
     parquet_cache
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reference/frequenz/cs_reporting/services/reporting_session/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reporting_session
   
 
     
@@ -1655,6 +1715,8 @@
       
         
       
+        
+      
     
     
     
@@ -1750,6 +1812,34 @@
     
   
     time
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reference/frequenz/cs_reporting/utils/timing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    timing
   
 
     
@@ -2373,7 +2463,26 @@ When a dataset is due for refresh, its trailing overlap is fetched again and
 merged by timestamp. Writes use a same-directory temporary file followed by an
 atomic replacement, while a file lock prevents duplicate writers across
 Streamlit sessions and local worker processes. Sync metadata is stored beside
-the Parquet directory in <code>data/metadata</code> by default.</p>
+the Parquet directory in <code>data/metadata</code> by default. Runtime duration entries
+are appended to <code>data/metadata/duration_log.txt</code>; when
+<code>PARQUET_STORAGE_PATH</code> is customized, the log uses the sibling <code>metadata</code>
+directory of that configured path.</p>
+<p>In Deepnote, the app automatically restores <code>parquet</code> and <code>metadata</code> from the
+persistent <code>/work/data</code> directory into the faster
+<code>/tmp/frequenz-cs-reporting</code> directory once per machine lifetime. Scheduled
+synchronization copies the updated local snapshot back to <code>/work/data</code> after a
+successful run. The Streamlit app also queues this copy in a background worker
+after rendering and after background dataset synchronization, so Parquet data,
+sync metadata, and duration logs survive machine restarts without delaying the
+page. Set <code>DEEPNOTE_HYBRID_CACHE_ENABLED=false</code> to disable this, or customize
+the roots with <code>DEEPNOTE_PERSISTENT_CACHE_ROOT</code> and
+<code>DEEPNOTE_LOCAL_CACHE_ROOT</code>.</p>
+<p>Interactive reporting reads active-power data from the local cache and starts
+one shared background refresh when cached data is available. An empty cache is
+populated synchronously once so the initial load does not depend on browser
+timers in Deepnote; cached dashboards remain usable during later refreshes.
+Duration records are queued and written in batches by a background writer so
+diagnostic file I/O does not block Streamlit.</p>
 <p>The reporting client used by this app exposes time-range queries, but not
 record modification timestamps, stable record IDs, change tokens, ETags, or a
 deletion feed. Consequently this is range-incremental synchronization, not a
@@ -2387,12 +2496,25 @@ every 15 minutes with cron or the deployment platform's scheduler:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>python<span class="w"> </span>-m<span class="w"> </span>frequenz.cs_reporting.services.sync_data<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span>--microgrid-id<span class="w"> </span><span class="m">241</span><span class="w"> </span>--lookback-days<span class="w"> </span><span class="m">30</span><span class="w"> </span>--resolution-minutes<span class="w"> </span><span class="m">15</span>
 </span></code></pre></div>
-<p>The page remains a safe pull-through fallback: cache hits do not call the API,
-and failed overlap refreshes continue serving the last successful file. Point
-<code>PARQUET_STORAGE_PATH</code> at persistent storage. All replicas must see the same
-filesystem with working POSIX locks; ephemeral container disks and independent
-per-replica volumes do not provide a coherent shared cache. For those
-deployments, use a shared POSIX volume or replace this backend with
+<p>Synchronize the 15-minute day-ahead price dataset once per day after the new
+prices have been published (for example, after 14:00 local time):</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>python<span class="w"> </span>-m<span class="w"> </span>frequenz.cs_reporting.services.sync_data<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span>--dataset<span class="w"> </span>day-ahead-prices<span class="w"> </span>--country-code<span class="w"> </span>DE_LU<span class="w"> </span>--lookback-days<span class="w"> </span><span class="m">30</span>
+</span></code></pre></div>
+<p>When <code>--end</code> is omitted, the price job requests through the following day so
+the newly published prices remain available until the next scheduled run.</p>
+<p>Streamlit reads day-ahead prices from this local cache without blocking the
+dashboard. If the requested range is missing, one shared in-process background
+job populates it while a small polling fragment waits. The dashboard initially
+renders without price-dependent content and reruns once when prices arrive.
+The daily scheduled job remains recommended so users normally receive an
+immediate cache hit.</p>
+<p>Microgrid measurements remain a safe pull-through fallback: cache hits do not
+call the API, and failed overlap refreshes continue serving the last successful
+file. Point <code>PARQUET_STORAGE_PATH</code> at persistent storage. All replicas must see
+the same filesystem with working POSIX locks; ephemeral container disks and
+independent per-replica volumes do not provide a coherent shared cache. For
+those deployments, use a shared POSIX volume or replace this backend with
 object-storage/database coordination.</p>
 <h3 id="running-in-deepnote">Running in Deepnote<a class="headerlink" href="#running-in-deepnote" title="Permanent link">¤</a></h3>
 <ul>
@@ -2405,27 +2527,27 @@ via the Deepnote integration.</li>
 </ul>
 <h2 id="library-usage">Library usage<a class="headerlink" href="#library-usage" title="Permanent link">¤</a></h2>
 <p>Fetch microgrid data programmatically (sync wrapper shown):</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">frequenz.cs_reporting.services.data_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_microgrid_data</span>
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="n">df</span> <span class="o">=</span> <span class="n">get_microgrid_data</span><span class="p">(</span>
-</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>    <span class="n">microgrid_id</span><span class="o">=</span><span class="mi">241</span><span class="p">,</span>
-</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>    <span class="n">start_date</span><span class="o">=</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2024</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
-</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>    <span class="n">end_date</span><span class="o">=</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2024</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
-</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>    <span class="n">resolution</span><span class="o">=</span><span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="mi">15</span><span class="p">),</span>
-</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">frequenz.cs_reporting.services.data_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_microgrid_data</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="n">df</span> <span class="o">=</span> <span class="n">get_microgrid_data</span><span class="p">(</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>    <span class="n">microgrid_id</span><span class="o">=</span><span class="mi">241</span><span class="p">,</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>    <span class="n">start_date</span><span class="o">=</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2024</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>    <span class="n">end_date</span><span class="o">=</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2024</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>    <span class="n">resolution</span><span class="o">=</span><span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="mi">15</span><span class="p">),</span>
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="p">)</span>
 </span></code></pre></div>
 <p>Build your own Streamlit page and add it to the navigation by defining a
 <code>PageSpec</code> in <code>frequenz.cs_reporting.app_pages</code>:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># app_pages/custom.py</span>
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">frequenz.cs_reporting.rep_cs_core.page_spec</span><span class="w"> </span><span class="kn">import</span> <span class="n">PageSpec</span>
-</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">streamlit</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">st</span>
-</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>
-</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>    <span class="n">st</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">"Custom view"</span><span class="p">)</span>
-</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"Add your own charts or tables here."</span><span class="p">)</span>
-</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>
-</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="n">PAGE</span> <span class="o">=</span> <span class="n">PageSpec</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">"custom"</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">"Custom"</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s2">"🛠️"</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">render</span><span class="o">=</span><span class="n">render</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># app_pages/custom.py</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">frequenz.cs_reporting.rep_cs_core.page_spec</span><span class="w"> </span><span class="kn">import</span> <span class="n">PageSpec</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">streamlit</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">st</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>    <span class="n">st</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">"Custom view"</span><span class="p">)</span>
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"Add your own charts or tables here."</span><span class="p">)</span>
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="n">PAGE</span> <span class="o">=</span> <span class="n">PageSpec</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">"custom"</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">"Custom"</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s2">"🛠️"</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">render</span><span class="o">=</span><span class="n">render</span><span class="p">)</span>
 </span></code></pre></div>
 <h2 id="development">Development<a class="headerlink" href="#development" title="Permanent link">¤</a></h2>
 <ul>
