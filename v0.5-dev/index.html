@@ -2445,7 +2445,7 @@ reporting utilities from <code>frequenz-lib-notebooks</code>, and renders dashbo
   Defaults to <code>300</code>.</li>
 </ul>
 <h3 id="microgrid-configs">Microgrid configs<a class="headerlink" href="#microgrid-configs" title="Permanent link">¤</a></h3>
-<p>Microgrid definitions are loaded from TOML files in <code>MICROGRID_CONFIG_DIR</code>.</p>
+<p>Microgrid definitions are loaded from TOML files in <code>MICROGRID_CONFIG_DIR</code>. The UI only lists configured microgrids returned by the Assets API for the current <code>FREQUENZ_API_KEY</code> and <code>FREQUENZ_API_SECRET</code>; inaccessible TOML entries are not displayed.</p>
 <h2 id="running-the-streamlit-app">Running the Streamlit app<a class="headerlink" href="#running-the-streamlit-app" title="Permanent link">¤</a></h2>
 <p>The app entry point is <code>app.py</code>. When you run <code>streamlit run app.py</code>, it:</p>
 <ul>
