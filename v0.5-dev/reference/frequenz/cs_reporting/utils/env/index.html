@@ -2316,43 +2316,43 @@
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/frequenz/cs_reporting/utils/env.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-11">11</a></span>
-<span class="normal"><a href="#__codelineno-0-12">12</a></span>
-<span class="normal"><a href="#__codelineno-0-13">13</a></span>
-<span class="normal"><a href="#__codelineno-0-14">14</a></span>
-<span class="normal"><a href="#__codelineno-0-15">15</a></span>
-<span class="normal"><a href="#__codelineno-0-16">16</a></span>
-<span class="normal"><a href="#__codelineno-0-17">17</a></span>
-<span class="normal"><a href="#__codelineno-0-18">18</a></span>
-<span class="normal"><a href="#__codelineno-0-19">19</a></span>
-<span class="normal"><a href="#__codelineno-0-20">20</a></span>
-<span class="normal"><a href="#__codelineno-0-21">21</a></span>
-<span class="normal"><a href="#__codelineno-0-22">22</a></span>
-<span class="normal"><a href="#__codelineno-0-23">23</a></span>
-<span class="normal"><a href="#__codelineno-0-24">24</a></span>
-<span class="normal"><a href="#__codelineno-0-25">25</a></span>
-<span class="normal"><a href="#__codelineno-0-26">26</a></span>
-<span class="normal"><a href="#__codelineno-0-27">27</a></span>
-<span class="normal"><a href="#__codelineno-0-28">28</a></span>
-<span class="normal"><a href="#__codelineno-0-29">29</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="k">def</span><span class="w"> </span><span class="nf">require_env</span><span class="p">(</span><span class="n">var</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="w">    </span><span class="sd">"""Return an environment variable value or raise a clear error.</span>
-</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13"></a>
-</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="sd">    Args:</span>
-</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="sd">        var: Name of the environment variable to read.</span>
-</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16"></a>
-</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="sd">    Returns:</span>
-</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="sd">        Environment variable value.</span>
-</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19"></a>
-</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="sd">    Raises:</span>
-</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21"></a><span class="sd">        RuntimeError: If the environment variable is missing or empty.</span>
-</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="sd">    """</span>
-</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23"></a>    <span class="n">val</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
-</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">val</span><span class="p">:</span>
-</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25"></a>        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26"></a>            <span class="sa">f</span><span class="s2">"Missing or empty required environment variable `</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2">`. "</span>
-</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27"></a>            <span class="s2">"Set it in your environment or .env file."</span>
-</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28"></a>        <span class="p">)</span>
-</span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29"></a>    <span class="k">return</span> <span class="n">val</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-11">11</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-12">12</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-13">13</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-14">14</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-15">15</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-16">16</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-17">17</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-18">18</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-19">19</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-20">20</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-21">21</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-22">22</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-23">23</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-24">24</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-25">25</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-26">26</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-27">27</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-28">28</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-29">29</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="frequenz.cs_reporting.utils.env.require_env--source--__span-0-11"><a id="frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-11" name="frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-11"></a><span class="k">def</span><span class="w"> </span><span class="nf">require_env</span><span class="p">(</span><span class="n">var</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span id="frequenz.cs_reporting.utils.env.require_env--source--__span-0-12"><a id="frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-12" name="frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-12"></a><span class="w">    </span><span class="sd">"""Return an environment variable value or raise a clear error.</span>
+</span><span id="frequenz.cs_reporting.utils.env.require_env--source--__span-0-13"><a id="frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-13" name="frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-13"></a>
+</span><span id="frequenz.cs_reporting.utils.env.require_env--source--__span-0-14"><a id="frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-14" name="frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-14"></a><span class="sd">    Args:</span>
+</span><span id="frequenz.cs_reporting.utils.env.require_env--source--__span-0-15"><a id="frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-15" name="frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-15"></a><span class="sd">        var: Name of the environment variable to read.</span>
+</span><span id="frequenz.cs_reporting.utils.env.require_env--source--__span-0-16"><a id="frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-16" name="frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-16"></a>
+</span><span id="frequenz.cs_reporting.utils.env.require_env--source--__span-0-17"><a id="frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-17" name="frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-17"></a><span class="sd">    Returns:</span>
+</span><span id="frequenz.cs_reporting.utils.env.require_env--source--__span-0-18"><a id="frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-18" name="frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-18"></a><span class="sd">        Environment variable value.</span>
+</span><span id="frequenz.cs_reporting.utils.env.require_env--source--__span-0-19"><a id="frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-19" name="frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-19"></a>
+</span><span id="frequenz.cs_reporting.utils.env.require_env--source--__span-0-20"><a id="frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-20" name="frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-20"></a><span class="sd">    Raises:</span>
+</span><span id="frequenz.cs_reporting.utils.env.require_env--source--__span-0-21"><a id="frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-21" name="frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-21"></a><span class="sd">        RuntimeError: If the environment variable is missing or empty.</span>
+</span><span id="frequenz.cs_reporting.utils.env.require_env--source--__span-0-22"><a id="frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-22" name="frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-22"></a><span class="sd">    """</span>
+</span><span id="frequenz.cs_reporting.utils.env.require_env--source--__span-0-23"><a id="frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-23" name="frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-23"></a>    <span class="n">val</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+</span><span id="frequenz.cs_reporting.utils.env.require_env--source--__span-0-24"><a id="frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-24" name="frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-24"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">val</span><span class="p">:</span>
+</span><span id="frequenz.cs_reporting.utils.env.require_env--source--__span-0-25"><a id="frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-25" name="frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-25"></a>        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+</span><span id="frequenz.cs_reporting.utils.env.require_env--source--__span-0-26"><a id="frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-26" name="frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-26"></a>            <span class="sa">f</span><span class="s2">"Missing or empty required environment variable `</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2">`. "</span>
+</span><span id="frequenz.cs_reporting.utils.env.require_env--source--__span-0-27"><a id="frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-27" name="frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-27"></a>            <span class="s2">"Set it in your environment or .env file."</span>
+</span><span id="frequenz.cs_reporting.utils.env.require_env--source--__span-0-28"><a id="frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-28" name="frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-28"></a>        <span class="p">)</span>
+</span><span id="frequenz.cs_reporting.utils.env.require_env--source--__span-0-29"><a id="frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-29" name="frequenz.cs_reporting.utils.env.require_env--source--__codelineno-0-29"></a>    <span class="k">return</span> <span class="n">val</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>
