@@ -1281,6 +1281,34 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#frequenz.cs_reporting.rep_cs_core.config-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Functions:
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Functions:">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;microgrid_config_dir
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2393,6 +2421,34 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#frequenz.cs_reporting.rep_cs_core.config-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Functions:
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Functions:">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;microgrid_config_dir
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2651,7 +2707,57 @@
     </div>
 
 </div>
+<h3 id="frequenz.cs_reporting.rep_cs_core.config-functions">Functions:<a href="#frequenz.cs_reporting.rep_cs_core.config-functions" class="headerlink" title="Permanent link">¤</a></h3>
 
+<div class="doc doc-object doc-function">
+
+
+<h4 id="frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir</span>
+
+
+<a href="#frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir" class="headerlink" title="Permanent link">¤</a></h4>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">microgrid_config_dir</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Return the configured microgrid TOML directory.</p>
+<p>An explicit environment setting takes precedence.  Otherwise, prefer the
+packaged configuration directory and retain the legacy directory as a
+fallback for deployments that do not provide it.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/frequenz/cs_reporting/rep_cs_core/config.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir--source--__codelineno-0-37">37</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir--source--__codelineno-0-38">38</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir--source--__codelineno-0-39">39</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir--source--__codelineno-0-40">40</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir--source--__codelineno-0-41">41</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir--source--__codelineno-0-42">42</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir--source--__codelineno-0-43">43</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir--source--__codelineno-0-44">44</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir--source--__codelineno-0-45">45</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir--source--__codelineno-0-46">46</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir--source--__codelineno-0-47">47</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir--source--__codelineno-0-48">48</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir--source--__span-0-37"><a id="frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir--source--__codelineno-0-37" name="frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir--source--__codelineno-0-37"></a><span class="k">def</span><span class="w"> </span><span class="nf">microgrid_config_dir</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+</span><span id="frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir--source--__span-0-38"><a id="frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir--source--__codelineno-0-38" name="frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir--source--__codelineno-0-38"></a><span class="w">    </span><span class="sd">"""Return the configured microgrid TOML directory.</span>
+</span><span id="frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir--source--__span-0-39"><a id="frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir--source--__codelineno-0-39" name="frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir--source--__codelineno-0-39"></a>
+</span><span id="frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir--source--__span-0-40"><a id="frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir--source--__codelineno-0-40" name="frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir--source--__codelineno-0-40"></a><span class="sd">    An explicit environment setting takes precedence.  Otherwise, prefer the</span>
+</span><span id="frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir--source--__span-0-41"><a id="frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir--source--__codelineno-0-41" name="frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir--source--__codelineno-0-41"></a><span class="sd">    packaged configuration directory and retain the legacy directory as a</span>
+</span><span id="frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir--source--__span-0-42"><a id="frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir--source--__codelineno-0-42" name="frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir--source--__codelineno-0-42"></a><span class="sd">    fallback for deployments that do not provide it.</span>
+</span><span id="frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir--source--__span-0-43"><a id="frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir--source--__codelineno-0-43" name="frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir--source--__codelineno-0-43"></a><span class="sd">    """</span>
+</span><span id="frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir--source--__span-0-44"><a id="frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir--source--__codelineno-0-44" name="frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir--source--__codelineno-0-44"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">configured_dir</span> <span class="o">:=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"MICROGRID_CONFIG_DIR"</span><span class="p">))</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir--source--__span-0-45"><a id="frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir--source--__codelineno-0-45" name="frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir--source--__codelineno-0-45"></a>        <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="n">configured_dir</span><span class="p">)</span>
+</span><span id="frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir--source--__span-0-46"><a id="frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir--source--__codelineno-0-46" name="frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir--source--__codelineno-0-46"></a>    <span class="k">if</span> <span class="n">_PACKAGED_MICROGRIDS_DIR</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+</span><span id="frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir--source--__span-0-47"><a id="frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir--source--__codelineno-0-47" name="frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir--source--__codelineno-0-47"></a>        <span class="k">return</span> <span class="n">_PACKAGED_MICROGRIDS_DIR</span>
+</span><span id="frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir--source--__span-0-48"><a id="frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir--source--__codelineno-0-48" name="frequenz.cs_reporting.rep_cs_core.config.microgrid_config_dir--source--__codelineno-0-48"></a>    <span class="k">return</span> <span class="n">_LEGACY_MICROGRIDS_DIR</span>
+</span></code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
 
 
 
