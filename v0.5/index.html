@@ -2644,7 +2644,8 @@ reporting utilities from <code>frequenz-lib-notebooks</code>, and renders dashbo
 <li><code>FREQUENZ_API_KEY</code> and <code>FREQUENZ_API_SECRET</code> <strong>(required)</strong>: Credentials used
   to authenticate and sign Reporting and Assets API requests.</li>
 <li><code>MICROGRID_CONFIG_DIR</code> <em>(optional)</em>: Directory containing TOML microgrid
-  configs. Defaults to <code>toml_directory/</code>.</li>
+  configs. When unset, <code>frequenz_config_microgrid/assets/</code> is used if present,
+  otherwise the app falls back to <code>toml_directory/</code>.</li>
 <li><code>PARQUET_STORAGE_PATH</code> <em>(optional)</em>: Persistent directory for reporting data.
   Defaults to <code>data/parquet</code>.</li>
 <li><code>SYNC_INTERVAL_MINUTES</code> <em>(optional)</em>: Minimum interval between overlap
