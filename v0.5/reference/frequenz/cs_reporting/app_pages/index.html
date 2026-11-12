@@ -1269,6 +1269,8 @@
       
         
       
+        
+      
     
     
     
@@ -1319,6 +1321,34 @@
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../services/api_timing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    api_timing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
               
             
               
@@ -2275,6 +2305,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Functions:">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#frequenz.cs_reporting.app_pages.preload_page_modules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;preload_page_modules
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
       </ul>
@@ -2337,6 +2384,79 @@
 
 <h3 id="frequenz.cs_reporting.app_pages-classes">Classes<a href="#frequenz.cs_reporting.app_pages-classes" class="headerlink" title="Permanent link">¤</a></h3>
 <h3 id="frequenz.cs_reporting.app_pages-functions">Functions:<a href="#frequenz.cs_reporting.app_pages-functions" class="headerlink" title="Permanent link">¤</a></h3>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="frequenz.cs_reporting.app_pages.preload_page_modules" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">frequenz.cs_reporting.app_pages.preload_page_modules</span>
+
+
+<a href="#frequenz.cs_reporting.app_pages.preload_page_modules" class="headerlink" title="Permanent link">¤</a></h4>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">preload_page_modules</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" title="threading.Thread" href="https://docs.python.org/3/library/threading.html#threading.Thread">Thread</a></span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Import every page module in a background thread.</p>
+<p>The first visit to a page otherwise pays its heavy imports (pandas, plotly,
+the reporting library) on the critical path.  Starting this while the home
+page renders hides that cost; Python's import locks make a concurrent
+on-demand import wait for the preload instead of importing twice.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/frequenz/cs_reporting/app_pages/__init__.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-73">73</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-74">74</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-75">75</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-76">76</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-77">77</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-78">78</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-79">79</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-80">80</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-81">81</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-82">82</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-83">83</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-84">84</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-85">85</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-86">86</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-87">87</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-88">88</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-89">89</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-90">90</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-91">91</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-92">92</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-93">93</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-94">94</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-95">95</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="frequenz.cs_reporting.app_pages.preload_page_modules--source--__span-0-73"><a id="frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-73" name="frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-73"></a><span class="k">def</span><span class="w"> </span><span class="nf">preload_page_modules</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">:</span>
+</span><span id="frequenz.cs_reporting.app_pages.preload_page_modules--source--__span-0-74"><a id="frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-74" name="frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-74"></a><span class="w">    </span><span class="sd">"""Import every page module in a background thread.</span>
+</span><span id="frequenz.cs_reporting.app_pages.preload_page_modules--source--__span-0-75"><a id="frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-75" name="frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-75"></a>
+</span><span id="frequenz.cs_reporting.app_pages.preload_page_modules--source--__span-0-76"><a id="frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-76" name="frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-76"></a><span class="sd">    The first visit to a page otherwise pays its heavy imports (pandas, plotly,</span>
+</span><span id="frequenz.cs_reporting.app_pages.preload_page_modules--source--__span-0-77"><a id="frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-77" name="frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-77"></a><span class="sd">    the reporting library) on the critical path.  Starting this while the home</span>
+</span><span id="frequenz.cs_reporting.app_pages.preload_page_modules--source--__span-0-78"><a id="frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-78" name="frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-78"></a><span class="sd">    page renders hides that cost; Python's import locks make a concurrent</span>
+</span><span id="frequenz.cs_reporting.app_pages.preload_page_modules--source--__span-0-79"><a id="frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-79" name="frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-79"></a><span class="sd">    on-demand import wait for the preload instead of importing twice.</span>
+</span><span id="frequenz.cs_reporting.app_pages.preload_page_modules--source--__span-0-80"><a id="frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-80" name="frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-80"></a><span class="sd">    """</span>
+</span><span id="frequenz.cs_reporting.app_pages.preload_page_modules--source--__span-0-81"><a id="frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-81" name="frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-81"></a>
+</span><span id="frequenz.cs_reporting.app_pages.preload_page_modules--source--__span-0-82"><a id="frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-82" name="frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-82"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="frequenz.cs_reporting.app_pages.preload_page_modules--source--__span-0-83"><a id="frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-83" name="frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-83"></a>        <span class="k">with</span> <span class="n">log_duration</span><span class="p">(</span><span class="s2">"app.preload_page_modules"</span><span class="p">):</span>
+</span><span id="frequenz.cs_reporting.app_pages.preload_page_modules--source--__span-0-84"><a id="frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-84" name="frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-84"></a>            <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">PAGE_MANIFEST</span><span class="p">:</span>
+</span><span id="frequenz.cs_reporting.app_pages.preload_page_modules--source--__span-0-85"><a id="frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-85" name="frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-85"></a>                <span class="k">try</span><span class="p">:</span>
+</span><span id="frequenz.cs_reporting.app_pages.preload_page_modules--source--__span-0-86"><a id="frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-86" name="frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-86"></a>                    <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</span><span id="frequenz.cs_reporting.app_pages.preload_page_modules--source--__span-0-87"><a id="frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-87" name="frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-87"></a>                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># pylint: disable=broad-except</span>
+</span><span id="frequenz.cs_reporting.app_pages.preload_page_modules--source--__span-0-88"><a id="frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-88" name="frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-88"></a>                    <span class="c1"># The page re-raises it with context when it is opened.</span>
+</span><span id="frequenz.cs_reporting.app_pages.preload_page_modules--source--__span-0-89"><a id="frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-89" name="frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-89"></a>                    <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span>
+</span><span id="frequenz.cs_reporting.app_pages.preload_page_modules--source--__span-0-90"><a id="frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-90" name="frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-90"></a>                        <span class="s2">"Preloading page module </span><span class="si">%r</span><span class="s2"> failed"</span><span class="p">,</span> <span class="n">name</span>
+</span><span id="frequenz.cs_reporting.app_pages.preload_page_modules--source--__span-0-91"><a id="frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-91" name="frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-91"></a>                    <span class="p">)</span>
+</span><span id="frequenz.cs_reporting.app_pages.preload_page_modules--source--__span-0-92"><a id="frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-92" name="frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-92"></a>
+</span><span id="frequenz.cs_reporting.app_pages.preload_page_modules--source--__span-0-93"><a id="frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-93" name="frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-93"></a>    <span class="n">thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">run</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"page-preload"</span><span class="p">,</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="frequenz.cs_reporting.app_pages.preload_page_modules--source--__span-0-94"><a id="frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-94" name="frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-94"></a>    <span class="n">thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</span><span id="frequenz.cs_reporting.app_pages.preload_page_modules--source--__span-0-95"><a id="frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-95" name="frequenz.cs_reporting.app_pages.preload_page_modules--source--__codelineno-0-95"></a>    <span class="k">return</span> <span class="n">thread</span>
+</span></code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
 
 
 

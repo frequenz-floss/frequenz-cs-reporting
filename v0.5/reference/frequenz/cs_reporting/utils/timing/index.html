@@ -1267,6 +1267,8 @@
       
         
       
+        
+      
     
     
     
@@ -1317,6 +1319,34 @@
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../services/api_timing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    api_timing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
               
             
               
@@ -1928,6 +1958,28 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#frequenz.cs_reporting.utils.timing.log_timing_note" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;log_timing_note
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#frequenz.cs_reporting.utils.timing.timing_enabled" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;timing_enabled
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2388,6 +2440,28 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#frequenz.cs_reporting.utils.timing.log_timing_note" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;log_timing_note
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#frequenz.cs_reporting.utils.timing.timing_enabled" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;timing_enabled
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2472,11 +2546,11 @@
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/frequenz/cs_reporting/utils/timing.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#frequenz.cs_reporting.utils.timing.flush_timing_log--source--__codelineno-0-99"> 99</a></span>
-<span class="normal"><a href="#frequenz.cs_reporting.utils.timing.flush_timing_log--source--__codelineno-0-100">100</a></span>
-<span class="normal"><a href="#frequenz.cs_reporting.utils.timing.flush_timing_log--source--__codelineno-0-101">101</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="frequenz.cs_reporting.utils.timing.flush_timing_log--source--__span-0-99"><a id="frequenz.cs_reporting.utils.timing.flush_timing_log--source--__codelineno-0-99" name="frequenz.cs_reporting.utils.timing.flush_timing_log--source--__codelineno-0-99"></a><span class="k">def</span><span class="w"> </span><span class="nf">flush_timing_log</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="frequenz.cs_reporting.utils.timing.flush_timing_log--source--__span-0-100"><a id="frequenz.cs_reporting.utils.timing.flush_timing_log--source--__codelineno-0-100" name="frequenz.cs_reporting.utils.timing.flush_timing_log--source--__codelineno-0-100"></a><span class="w">    </span><span class="sd">"""Wait until all queued timing entries have been written."""</span>
-</span><span id="frequenz.cs_reporting.utils.timing.flush_timing_log--source--__span-0-101"><a id="frequenz.cs_reporting.utils.timing.flush_timing_log--source--__codelineno-0-101" name="frequenz.cs_reporting.utils.timing.flush_timing_log--source--__codelineno-0-101"></a>    <span class="n">_TIMING_QUEUE</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#frequenz.cs_reporting.utils.timing.flush_timing_log--source--__codelineno-0-112">112</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.utils.timing.flush_timing_log--source--__codelineno-0-113">113</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.utils.timing.flush_timing_log--source--__codelineno-0-114">114</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="frequenz.cs_reporting.utils.timing.flush_timing_log--source--__span-0-112"><a id="frequenz.cs_reporting.utils.timing.flush_timing_log--source--__codelineno-0-112" name="frequenz.cs_reporting.utils.timing.flush_timing_log--source--__codelineno-0-112"></a><span class="k">def</span><span class="w"> </span><span class="nf">flush_timing_log</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="frequenz.cs_reporting.utils.timing.flush_timing_log--source--__span-0-113"><a id="frequenz.cs_reporting.utils.timing.flush_timing_log--source--__codelineno-0-113" name="frequenz.cs_reporting.utils.timing.flush_timing_log--source--__codelineno-0-113"></a><span class="w">    </span><span class="sd">"""Wait until all queued timing entries have been written."""</span>
+</span><span id="frequenz.cs_reporting.utils.timing.flush_timing_log--source--__span-0-114"><a id="frequenz.cs_reporting.utils.timing.flush_timing_log--source--__codelineno-0-114" name="frequenz.cs_reporting.utils.timing.flush_timing_log--source--__codelineno-0-114"></a>    <span class="n">_TIMING_QUEUE</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -2497,6 +2571,7 @@
     <div class="doc doc-contents ">
 
         <p>Record the wall-clock duration of an operation in the timing log.</p>
+<p>Does nothing unless <code>CS_REPORTING_TIMING</code> is set to <code>1</code>.</p>
 
 
 <table>
@@ -2529,33 +2604,101 @@
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/frequenz/cs_reporting/utils/timing.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-104">104</a></span>
-<span class="normal"><a href="#frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-105">105</a></span>
-<span class="normal"><a href="#frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-106">106</a></span>
-<span class="normal"><a href="#frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-107">107</a></span>
-<span class="normal"><a href="#frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-108">108</a></span>
-<span class="normal"><a href="#frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-109">109</a></span>
-<span class="normal"><a href="#frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-110">110</a></span>
-<span class="normal"><a href="#frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-111">111</a></span>
-<span class="normal"><a href="#frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-112">112</a></span>
-<span class="normal"><a href="#frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-113">113</a></span>
-<span class="normal"><a href="#frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-114">114</a></span>
-<span class="normal"><a href="#frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-115">115</a></span>
-<span class="normal"><a href="#frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-116">116</a></span>
-<span class="normal"><a href="#frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-117">117</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="frequenz.cs_reporting.utils.timing.log_duration--source--__span-0-104"><a id="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-104" name="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-104"></a><span class="nd">@contextmanager</span>
-</span><span id="frequenz.cs_reporting.utils.timing.log_duration--source--__span-0-105"><a id="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-105" name="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-105"></a><span class="k">def</span><span class="w"> </span><span class="nf">log_duration</span><span class="p">(</span><span class="n">operation</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="kc">None</span><span class="p">]:</span>
-</span><span id="frequenz.cs_reporting.utils.timing.log_duration--source--__span-0-106"><a id="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-106" name="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-106"></a><span class="w">    </span><span class="sd">"""Record the wall-clock duration of an operation in the timing log.</span>
-</span><span id="frequenz.cs_reporting.utils.timing.log_duration--source--__span-0-107"><a id="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-107" name="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-107"></a>
-</span><span id="frequenz.cs_reporting.utils.timing.log_duration--source--__span-0-108"><a id="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-108" name="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-108"></a><span class="sd">    Args:</span>
-</span><span id="frequenz.cs_reporting.utils.timing.log_duration--source--__span-0-109"><a id="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-109" name="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-109"></a><span class="sd">        operation: Stable, human-readable operation name.</span>
-</span><span id="frequenz.cs_reporting.utils.timing.log_duration--source--__span-0-110"><a id="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-110" name="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-110"></a><span class="sd">    """</span>
-</span><span id="frequenz.cs_reporting.utils.timing.log_duration--source--__span-0-111"><a id="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-111" name="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-111"></a>    <span class="n">_write_timing_line</span><span class="p">(</span><span class="sa">f</span><span class="s2">"START </span><span class="si">{</span><span class="n">operation</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-</span><span id="frequenz.cs_reporting.utils.timing.log_duration--source--__span-0-112"><a id="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-112" name="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-112"></a>    <span class="n">started</span> <span class="o">=</span> <span class="n">perf_counter</span><span class="p">()</span>
-</span><span id="frequenz.cs_reporting.utils.timing.log_duration--source--__span-0-113"><a id="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-113" name="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-113"></a>    <span class="k">try</span><span class="p">:</span>
-</span><span id="frequenz.cs_reporting.utils.timing.log_duration--source--__span-0-114"><a id="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-114" name="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-114"></a>        <span class="k">yield</span>
-</span><span id="frequenz.cs_reporting.utils.timing.log_duration--source--__span-0-115"><a id="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-115" name="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-115"></a>    <span class="k">finally</span><span class="p">:</span>
-</span><span id="frequenz.cs_reporting.utils.timing.log_duration--source--__span-0-116"><a id="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-116" name="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-116"></a>        <span class="n">elapsed</span> <span class="o">=</span> <span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">started</span>
-</span><span id="frequenz.cs_reporting.utils.timing.log_duration--source--__span-0-117"><a id="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-117" name="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-117"></a>        <span class="n">_write_timing_line</span><span class="p">(</span><span class="sa">f</span><span class="s2">"END </span><span class="si">{</span><span class="n">operation</span><span class="si">}</span><span class="s2"> duration=</span><span class="si">{</span><span class="n">elapsed</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">s"</span><span class="p">)</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-117">117</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-118">118</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-119">119</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-120">120</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-121">121</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-122">122</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-123">123</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-124">124</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-125">125</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-126">126</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-127">127</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-128">128</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-129">129</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-130">130</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-131">131</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-132">132</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-133">133</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-134">134</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-135">135</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="frequenz.cs_reporting.utils.timing.log_duration--source--__span-0-117"><a id="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-117" name="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-117"></a><span class="nd">@contextmanager</span>
+</span><span id="frequenz.cs_reporting.utils.timing.log_duration--source--__span-0-118"><a id="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-118" name="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-118"></a><span class="k">def</span><span class="w"> </span><span class="nf">log_duration</span><span class="p">(</span><span class="n">operation</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="kc">None</span><span class="p">]:</span>
+</span><span id="frequenz.cs_reporting.utils.timing.log_duration--source--__span-0-119"><a id="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-119" name="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-119"></a><span class="w">    </span><span class="sd">"""Record the wall-clock duration of an operation in the timing log.</span>
+</span><span id="frequenz.cs_reporting.utils.timing.log_duration--source--__span-0-120"><a id="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-120" name="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-120"></a>
+</span><span id="frequenz.cs_reporting.utils.timing.log_duration--source--__span-0-121"><a id="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-121" name="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-121"></a><span class="sd">    Does nothing unless ``CS_REPORTING_TIMING`` is set to ``1``.</span>
+</span><span id="frequenz.cs_reporting.utils.timing.log_duration--source--__span-0-122"><a id="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-122" name="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-122"></a>
+</span><span id="frequenz.cs_reporting.utils.timing.log_duration--source--__span-0-123"><a id="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-123" name="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-123"></a><span class="sd">    Args:</span>
+</span><span id="frequenz.cs_reporting.utils.timing.log_duration--source--__span-0-124"><a id="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-124" name="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-124"></a><span class="sd">        operation: Stable, human-readable operation name.</span>
+</span><span id="frequenz.cs_reporting.utils.timing.log_duration--source--__span-0-125"><a id="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-125" name="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-125"></a><span class="sd">    """</span>
+</span><span id="frequenz.cs_reporting.utils.timing.log_duration--source--__span-0-126"><a id="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-126" name="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-126"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">timing_enabled</span><span class="p">():</span>
+</span><span id="frequenz.cs_reporting.utils.timing.log_duration--source--__span-0-127"><a id="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-127" name="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-127"></a>        <span class="k">yield</span>
+</span><span id="frequenz.cs_reporting.utils.timing.log_duration--source--__span-0-128"><a id="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-128" name="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-128"></a>        <span class="k">return</span>
+</span><span id="frequenz.cs_reporting.utils.timing.log_duration--source--__span-0-129"><a id="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-129" name="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-129"></a>    <span class="n">_write_timing_line</span><span class="p">(</span><span class="sa">f</span><span class="s2">"START </span><span class="si">{</span><span class="n">operation</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</span><span id="frequenz.cs_reporting.utils.timing.log_duration--source--__span-0-130"><a id="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-130" name="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-130"></a>    <span class="n">started</span> <span class="o">=</span> <span class="n">perf_counter</span><span class="p">()</span>
+</span><span id="frequenz.cs_reporting.utils.timing.log_duration--source--__span-0-131"><a id="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-131" name="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-131"></a>    <span class="k">try</span><span class="p">:</span>
+</span><span id="frequenz.cs_reporting.utils.timing.log_duration--source--__span-0-132"><a id="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-132" name="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-132"></a>        <span class="k">yield</span>
+</span><span id="frequenz.cs_reporting.utils.timing.log_duration--source--__span-0-133"><a id="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-133" name="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-133"></a>    <span class="k">finally</span><span class="p">:</span>
+</span><span id="frequenz.cs_reporting.utils.timing.log_duration--source--__span-0-134"><a id="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-134" name="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-134"></a>        <span class="n">elapsed</span> <span class="o">=</span> <span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">started</span>
+</span><span id="frequenz.cs_reporting.utils.timing.log_duration--source--__span-0-135"><a id="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-135" name="frequenz.cs_reporting.utils.timing.log_duration--source--__codelineno-0-135"></a>        <span class="n">_write_timing_line</span><span class="p">(</span><span class="sa">f</span><span class="s2">"END </span><span class="si">{</span><span class="n">operation</span><span class="si">}</span><span class="s2"> duration=</span><span class="si">{</span><span class="n">elapsed</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">s"</span><span class="p">)</span>
+</span></code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="frequenz.cs_reporting.utils.timing.log_timing_note" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">frequenz.cs_reporting.utils.timing.log_timing_note</span>
+
+
+<a href="#frequenz.cs_reporting.utils.timing.log_timing_note" class="headerlink" title="Permanent link">¤</a></h4>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">log_timing_note</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Record a free-form diagnostic line (for example a sample count).</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/frequenz/cs_reporting/utils/timing.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#frequenz.cs_reporting.utils.timing.log_timing_note--source--__codelineno-0-107">107</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.utils.timing.log_timing_note--source--__codelineno-0-108">108</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.utils.timing.log_timing_note--source--__codelineno-0-109">109</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="frequenz.cs_reporting.utils.timing.log_timing_note--source--__span-0-107"><a id="frequenz.cs_reporting.utils.timing.log_timing_note--source--__codelineno-0-107" name="frequenz.cs_reporting.utils.timing.log_timing_note--source--__codelineno-0-107"></a><span class="k">def</span><span class="w"> </span><span class="nf">log_timing_note</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="frequenz.cs_reporting.utils.timing.log_timing_note--source--__span-0-108"><a id="frequenz.cs_reporting.utils.timing.log_timing_note--source--__codelineno-0-108" name="frequenz.cs_reporting.utils.timing.log_timing_note--source--__codelineno-0-108"></a><span class="w">    </span><span class="sd">"""Record a free-form diagnostic line (for example a sample count)."""</span>
+</span><span id="frequenz.cs_reporting.utils.timing.log_timing_note--source--__span-0-109"><a id="frequenz.cs_reporting.utils.timing.log_timing_note--source--__codelineno-0-109" name="frequenz.cs_reporting.utils.timing.log_timing_note--source--__codelineno-0-109"></a>    <span class="n">_write_timing_line</span><span class="p">(</span><span class="sa">f</span><span class="s2">"NOTE </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</span></code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="frequenz.cs_reporting.utils.timing.timing_enabled" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">frequenz.cs_reporting.utils.timing.timing_enabled</span>
+
+
+<a href="#frequenz.cs_reporting.utils.timing.timing_enabled" class="headerlink" title="Permanent link">¤</a></h4>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">timing_enabled</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#bool">bool</a></span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Return whether timing diagnostics are switched on (off by default).</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/frequenz/cs_reporting/utils/timing.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#frequenz.cs_reporting.utils.timing.timing_enabled--source--__codelineno-0-31">31</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.utils.timing.timing_enabled--source--__codelineno-0-32">32</a></span>
+<span class="normal"><a href="#frequenz.cs_reporting.utils.timing.timing_enabled--source--__codelineno-0-33">33</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="frequenz.cs_reporting.utils.timing.timing_enabled--source--__span-0-31"><a id="frequenz.cs_reporting.utils.timing.timing_enabled--source--__codelineno-0-31" name="frequenz.cs_reporting.utils.timing.timing_enabled--source--__codelineno-0-31"></a><span class="k">def</span><span class="w"> </span><span class="nf">timing_enabled</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="frequenz.cs_reporting.utils.timing.timing_enabled--source--__span-0-32"><a id="frequenz.cs_reporting.utils.timing.timing_enabled--source--__codelineno-0-32" name="frequenz.cs_reporting.utils.timing.timing_enabled--source--__codelineno-0-32"></a><span class="w">    </span><span class="sd">"""Return whether timing diagnostics are switched on (off by default)."""</span>
+</span><span id="frequenz.cs_reporting.utils.timing.timing_enabled--source--__span-0-33"><a id="frequenz.cs_reporting.utils.timing.timing_enabled--source--__codelineno-0-33" name="frequenz.cs_reporting.utils.timing.timing_enabled--source--__codelineno-0-33"></a>    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="n">_TIMING_ENV_VAR</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">"1"</span><span class="p">,</span> <span class="s2">"true"</span><span class="p">,</span> <span class="s2">"yes"</span><span class="p">,</span> <span class="s2">"on"</span><span class="p">}</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>
