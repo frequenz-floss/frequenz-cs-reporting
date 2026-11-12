@@ -1454,6 +1454,8 @@
       
         
       
+        
+      
     
     
     
@@ -1504,6 +1506,34 @@
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reference/frequenz/cs_reporting/services/api_timing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    api_timing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
               
             
               
@@ -2675,7 +2705,8 @@ merged by timestamp. Writes use a same-directory temporary file followed by an
 atomic replacement, while a file lock prevents duplicate writers across
 Streamlit sessions and local worker processes. Sync metadata is stored beside
 the Parquet directory in <code>data/metadata</code> by default. Runtime duration entries
-are appended to <code>data/metadata/duration_log.txt</code>; when
+are appended to <code>data/metadata/duration_log.txt</code> when <code>CS_REPORTING_TIMING=1</code>
+is set (off by default); when
 <code>PARQUET_STORAGE_PATH</code> is customized, the log uses the sibling <code>metadata</code>
 directory of that configured path.</p>
 <p>In Deepnote, the app automatically restores <code>parquet</code> and <code>metadata</code> from the
