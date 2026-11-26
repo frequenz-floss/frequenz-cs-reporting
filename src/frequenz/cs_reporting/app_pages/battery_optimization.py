@@ -39,7 +39,19 @@ from frequenz.cs_reporting.services.data_service import (
 from frequenz.cs_reporting.utils.errors import report_error
 from frequenz.cs_reporting.utils.timing import log_duration
 from frequenz.cs_reporting.views.battery_optimization import render_battery_optimization
-from frequenz.cs_reporting.views.dashboard import build_master_df, split_periods
+from frequenz.cs_reporting.views.dashboard import (
+    _DAY_AHEAD_PRICE_WARNING,
+    _PRICE_TEXT,
+    _missing_price_dates,
+    _price_warning,
+    build_master_df,
+    split_periods,
+)
+
+
+def _has_missing_prices(master_df: Any) -> bool:
+    """Return whether any displayed interval lacks a day-ahead price."""
+    return bool(_missing_price_dates(master_df))
 
 
 def _mid_caption(microgrid_id: int, microgrid_name: str | None) -> str:
@@ -144,14 +156,10 @@ def render() -> None:
             price_sync.result()
         except Exception as exc:  # pylint: disable=broad-except
             if type(exc).__name__ == "NoMatchingDataError":
-                st.warning(
-                    "Für einen Teil des Zeitraums sind keine neuen "
-                    "Day-Ahead-Preise verfügbar. Vorhandene Cache-Daten "
-                    "werden verwendet."
-                )
+                st.warning(_PRICE_TEXT["no_new_prices"])
             else:
                 st.error(
-                    "Day-Ahead-Preise konnten nicht geladen werden. "
+                    f"{_PRICE_TEXT['load_failed']} "
                     f"{report_error(exc, 'Day-ahead price load failed')}"
                 )
                 st.stop()
@@ -226,6 +234,8 @@ def render() -> None:
         st.stop()
 
     with log_duration("battery.render_report"), report_content.container():
+        if not still_pending and _has_missing_prices(current_master_df):
+            st.warning(_price_warning(_DAY_AHEAD_PRICE_WARNING, current_master_df))
         render_battery_optimization(
             current_master_df,
             resolution,

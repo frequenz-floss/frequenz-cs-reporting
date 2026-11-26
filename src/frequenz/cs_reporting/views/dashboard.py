@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+import os
 from concurrent.futures import Future
 from datetime import UTC, datetime, timedelta
 from typing import Any, Iterable
@@ -64,15 +65,10 @@ _DAY_AHEAD_PRICE_METRIC_KEYS = {
     "average_da_price_dso_import",
     "average_da_price_dso_export",
 }
-_DAY_AHEAD_PRICE_WARNING = (
-    "Day-ahead prices are not available in the local cache. "
-    "Please check the scheduled data synchronization."
-)
-_INCOMPLETE_DAY_AHEAD_PRICE_WARNING = (
-    "Day-ahead prices are missing for intervals with grid import or feed-in. "
-    "Affected cost, revenue, and average-price KPIs are shown as unavailable "
-    "(—); missing prices are not treated as zero."
-)
+_PRICE_TEXT = load_tooltips("day_ahead_prices")
+_DAY_AHEAD_PRICE_WARNING = _PRICE_TEXT["unavailable"]
+_MISSING_ENTSOE_KEY_WARNING = _PRICE_TEXT["missing_entsoe_key"]
+_INCOMPLETE_DAY_AHEAD_PRICE_WARNING = _PRICE_TEXT["incomplete"]
 _DSO_POWER_COLUMNS = ("dso_import_power", "dso_export_power")
 _INCOMPLETE_DSO_DATA_WARNING = load_tooltips("reporting")["incomplete_dso_data_warning"]
 
@@ -138,7 +134,7 @@ def _set_projected_value_metrics(
     value_key: str,
     average_price_key: str,
 ) -> None:
-    """Set projected value metrics without valuing missing prices at zero."""
+    """Set projected value metrics from priced intervals only."""
     if power_column not in master_df.columns:
         return
     interval_hours = resolution.total_seconds() / 3600
@@ -158,13 +154,17 @@ def _set_projected_value_metrics(
         metrics[average_price_key] = None
         return
     prices = pd.to_numeric(master_df[_DAY_AHEAD_PRICE_COLUMN], errors="coerce")
-    if prices.loc[relevant].isna().any():
+    # Intervals without a price are ignored; value and average use priced rows.
+    priced = relevant & prices.notna()
+    if not priced.any():
         metrics[value_key] = None
         metrics[average_price_key] = None
         return
-    projected_value = float((energy.loc[relevant] * prices.loc[relevant] / 1000).sum())
+    projected_value = float((energy.loc[priced] * prices.loc[priced] / 1000).sum())
     metrics[value_key] = projected_value
-    metrics[average_price_key] = (projected_value * 100) / total_energy
+    metrics[average_price_key] = (projected_value * 100) / float(
+        energy.loc[priced].sum()
+    )
 
 
 def _has_day_ahead_prices(master_df: pd.DataFrame) -> bool:
@@ -187,6 +187,40 @@ def _has_current_day_ahead_prices(master_df: pd.DataFrame) -> bool:
         _DAY_AHEAD_PRICE_COLUMN,
     ]
     return not latest_rows.empty and bool(latest_rows.notna().any())
+
+
+def _missing_price_dates(master_df: pd.DataFrame) -> list[str]:
+    """Return ISO dates or date ranges where cached data lacks day-ahead prices."""
+    if master_df.empty or "timestamp" not in master_df.columns:
+        return []
+    timestamps = pd.to_datetime(master_df["timestamp"], errors="coerce")
+    if _DAY_AHEAD_PRICE_COLUMN in master_df.columns:
+        missing = master_df[_DAY_AHEAD_PRICE_COLUMN].isna()
+    else:
+        missing = pd.Series(True, index=master_df.index)
+    days = sorted(set(timestamps[missing & timestamps.notna()].dt.date))
+    ranges: list[list[Any]] = []
+    for day in days:
+        if ranges and day - ranges[-1][1] == timedelta(days=1):
+            ranges[-1][1] = day
+        else:
+            ranges.append([day, day])
+    return [
+        (
+            first.isoformat()
+            if first == last
+            else f"{first.isoformat()} bis {last.isoformat()}"
+        )
+        for first, last in ranges
+    ]
+
+
+def _price_warning(base: str, master_df: pd.DataFrame) -> str:
+    """Append the dates missing in the cached prices to a warning message."""
+    dates = _missing_price_dates(master_df)
+    if not dates:
+        return base
+    return f"{base} {_PRICE_TEXT['missing_dates'].format(dates=', '.join(dates))}"
 
 
 def _has_complete_dso_data(master_df: pd.DataFrame) -> bool:
@@ -628,7 +662,7 @@ def _poll_day_ahead_price_sync(start: datetime, end: datetime) -> None:
     if future.done():
         _rerun_after_price_sync_once(future)
         return
-    st.info("Day-ahead prices are loading in the background …")
+    st.info(_PRICE_TEXT["loading"])
 
 
 def _request_dashboard_rerun() -> None:
@@ -652,6 +686,9 @@ def _render_day_ahead_price_sync_status(
     resolution: timedelta,
 ) -> None:
     """Start or report the non-blocking synchronization for missing prices."""
+    if not os.getenv("ENTSOE_API_KEY"):
+        st.warning(_price_warning(_MISSING_ENTSOE_KEY_WARNING, master_df))
+        return
     start, end = _price_sync_range(master_df, previous_master_df, resolution)
     future = start_background_day_ahead_price_sync("DE_LU", start, end)
     if not future.done():
@@ -661,15 +698,16 @@ def _render_day_ahead_price_sync_status(
         prices = future.result()
     except Exception as exc:  # pylint: disable=broad-exception-caught
         reference = report_error(exc, "Day-ahead price sync failed")
-        st.warning(f"{_DAY_AHEAD_PRICE_WARNING} {reference}")
+        # master_df already holds whatever the cache has; report what is missing.
+        st.warning(f"{_price_warning(_DAY_AHEAD_PRICE_WARNING, master_df)} {reference}")
         return
     if prices.empty:
-        st.warning(_DAY_AHEAD_PRICE_WARNING)
+        st.warning(_price_warning(_DAY_AHEAD_PRICE_WARNING, master_df))
         return
 
     if _rerun_after_price_sync_once(future):
         return
-    st.warning(_INCOMPLETE_DAY_AHEAD_PRICE_WARNING)
+    st.warning(_price_warning(_INCOMPLETE_DAY_AHEAD_PRICE_WARNING, master_df))
 
 
 def render_dashboard(
